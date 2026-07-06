@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S4 — Embedding D7–D8: Prevention & Recognition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Open Sans', Arial, sans-serif; background: #07275D; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+.deck { width: 100vw; height: 100vh; position: relative; }
+.slide { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* CHROME */
+.slide-header { background: #07275D; padding: 16px 48px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.logo-text { color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.session-badge { background: #ED1C24; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
+.lang-toggle { display: flex; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
+.lang-btn { background: transparent; border: none; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; padding: 4px 10px; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; letter-spacing: 0.05em; transition: all 0.15s; }
+.lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
+.lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+.slide-footer { background: #07275D; padding: 10px 48px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.slide-counter { color: #a8c4e8; font-size: 12px; }
+.nav-btns { display: flex; gap: 8px; }
+.nav-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: 'Open Sans', Arial, sans-serif; }
+.nav-btn:hover { background: rgba(255,255,255,0.22); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.notes-toggle { background: rgba(237,28,36,0.25); border: 1px solid rgba(237,28,36,0.5); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; font-weight: 600; letter-spacing: 0.04em; }
+.notes-toggle:hover { background: rgba(237,28,36,0.4); }
+
+/* NOTES PANEL */
+.notes-panel { display: none; position: absolute; bottom: 52px; right: 48px; width: 340px; background: #122652; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 16px; z-index: 100; }
+.notes-panel.visible { display: block; }
+.notes-panel h4 { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+.notes-panel p, .notes-panel li { color: #c8d8eb; font-size: 12px; line-height: 1.6; }
+.notes-panel ul { padding-left: 14px; }
+.notes-panel li { margin-bottom: 4px; }
+
+/* SLIDE BODY */
+.slide-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+/* TITLE SLIDE */
+.title-slide .slide-body { background: #07275D; align-items: center; justify-content: center; text-align: center; padding: 40px 80px; }
+.title-slide .eyebrow { color: #ED1C24; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+.title-slide h1 { color: #fff; font-size: 40px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+.title-slide .subtitle { color: #a8c4e8; font-size: 17px; font-weight: 300; margin-bottom: 40px; }
+.title-meta { display: flex; gap: 32px; justify-content: center; }
+.title-meta-item .label { color: #4B89D7; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.title-meta-item .value { color: #fff; font-size: 15px; font-weight: 600; }
+.title-divider { width: 60px; height: 3px; background: #ED1C24; margin: 0 auto 36px; }
+
+/* CONTENT SLIDES */
+.content-slide .slide-body { background: #fff; padding: 28px 56px 20px; }
+.slide-title { color: #07275D; font-size: 26px; font-weight: 700; margin-bottom: 5px; border-left: 4px solid #ED1C24; padding-left: 16px; }
+.slide-intro { color: #555; font-size: 14px; margin-bottom: 22px; padding-left: 20px; }
+.block-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+.bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.bullet-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #1a1a1a; line-height: 1.5; }
+.bullet-list li::before { content: ''; width: 7px; height: 7px; background: #ED1C24; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.bullet-list li strong { color: #07275D; }
+
+/* BLOCK DIVIDER */
+.divider-slide .slide-body { background: #07275D; align-items: center; justify-content: center; text-align: center; padding: 40px 80px; }
+.divider-slide .block-num { color: rgba(237,28,36,0.7); font-size: 72px; font-weight: 700; line-height: 1; margin-bottom: 16px; }
+.divider-slide .block-title { color: #fff; font-size: 34px; font-weight: 700; margin-bottom: 12px; }
+.divider-slide .block-sub { color: #a8c4e8; font-size: 18px; font-weight: 300; }
+.divider-slide .prompt-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 18px 28px; margin-top: 28px; max-width: 600px; }
+.divider-slide .prompt-box p { color: #e0ecf8; font-size: 15px; font-style: italic; }
+
+/* D7 WORKSHEET */
+.d7-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.d7-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+.d7-card { border-radius: 8px; padding: 14px 16px; border: 2px solid #e0e8f0; background: #f8fafd; opacity: 0.15; transition: opacity 0.4s, border-color 0.4s; }
+.d7-card.revealed { opacity: 1; border-color: #07275D; }
+.d7-card.active-card { border-color: #ED1C24; background: #fff8f8; }
+.d7-card .comp-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.d7-card .comp-title { color: #07275D; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.d7-card .comp-desc { color: #555; font-size: 12px; line-height: 1.5; }
+.d7-card .comp-test { color: #c41520; font-size: 11px; font-style: italic; margin-top: 6px; font-weight: 600; }
+.d7-controls { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+.ctrl-btn { padding: 7px 18px; background: #07275D; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; transition: background 0.15s; }
+.ctrl-btn:hover { background: #0a3a8a; }
+.ctrl-btn:disabled { background: #ccc; cursor: default; }
+.ctrl-btn.secondary { background: #fff; color: #07275D; border: 1px solid #07275D; }
+.ctrl-btn.secondary:hover { background: #eef3f9; }
+.ctrl-progress { color: #888; font-size: 13px; margin-left: auto; }
+
+/* D7 TEST */
+.d7test-slide .slide-body { background: #07275D; align-items: center; justify-content: center; padding: 32px 64px; }
+.test-card { background: #fff; border-radius: 12px; padding: 36px 44px; max-width: 700px; text-align: center; }
+.test-card .test-label { color: #ED1C24; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+.test-card .test-question { color: #07275D; font-size: 22px; font-weight: 700; line-height: 1.4; margin-bottom: 20px; }
+.test-card .test-sub { color: #555; font-size: 15px; line-height: 1.6; }
+.test-card .test-answer { background: #07275D; color: #fff; border-radius: 8px; padding: 16px 20px; margin-top: 20px; font-size: 14px; font-weight: 600; display: none; }
+.test-card .test-answer.visible { display: block; }
+.test-reveal-btn { margin-top: 20px; padding: 10px 28px; background: #ED1C24; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; }
+.test-reveal-btn:hover { background: #c41520; }
+.test-reveal-btn:disabled { background: #ccc; cursor: default; }
+
+/* D8 RECOGNITION */
+.d8-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.d8-qualities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.d8-quality { border-radius: 8px; padding: 16px 18px; border: 2px solid #e0e8f0; background: #fafafa; opacity: 0.15; transition: opacity 0.4s, border-color 0.4s; }
+.d8-quality.revealed { opacity: 1; border-color: #07275D; background: #f5f8fd; }
+.d8-quality .q-num { color: #ED1C24; font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.d8-quality .q-title { color: #07275D; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.d8-quality .q-desc { color: #555; font-size: 12px; line-height: 1.5; }
+.d8-quality .q-example { background: #eef3f9; border-radius: 4px; padding: 8px 10px; margin-top: 8px; font-size: 11px; color: #07275D; font-style: italic; }
+
+/* COMPLETE ARC */
+.arc-slide .slide-body { background: #fff; padding: 22px 40px 16px; }
+.arc-complete { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+.arc-card { border: 2px solid #e0e8f0; border-radius: 8px; padding: 12px 14px; background: #f5f8fd; }
+.arc-card.d7-highlight { border-color: #ED1C24; background: #fff5f5; }
+.arc-card.d8-highlight { border-color: #2a6b2a; background: #f0f8f0; }
+.arc-card .d-num { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+.arc-card.d7-highlight .d-num, .arc-card.d8-highlight .d-num { font-size: 13px; }
+.arc-card .d-title { color: #07275D; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.arc-card .d-desc { color: #555; font-size: 11px; line-height: 1.4; }
+
+/* PRESENTATION RUBRIC */
+.rubric-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.rubric-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 12.5px; }
+.rubric-table th { background: #07275D; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; font-size: 12px; }
+.rubric-table td { padding: 9px 12px; border-bottom: 1px solid #e8e8e4; vertical-align: top; line-height: 1.4; }
+.rubric-table tr:nth-child(even) td { background: #f5f8fd; }
+.rubric-table .dim { color: #07275D; font-weight: 700; }
+.score-badge { display: inline-block; background: #07275D; color: #fff; border-radius: 3px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+
+/* AGENDA */
+.agenda-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.agenda-items { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+.agenda-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 6px; background: #f5f8fd; border-left: 3px solid #e0e8f0; }
+.agenda-item.current { background: #fff5f5; border-left-color: #ED1C24; }
+.agenda-item .time { color: #888; font-size: 12px; font-weight: 600; min-width: 60px; }
+.agenda-item .topic { color: #1a1a1a; font-size: 13px; font-weight: 600; }
+.agenda-item .tag { margin-left: auto; background: #07275D; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+.agenda-item.current .tag { background: #ED1C24; }
+
+/* D1-D6 LIVE BUILD SLIDE */
+.d16build-slide .slide-body { background: #fff; padding: 18px 48px 12px; }
+.d16-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.d16-card { border-radius: 8px; padding: 13px 15px; border: 2px solid #e0e8f0; background: #f5f8fd; }
+.d16-card.active-d { border-color: #ED1C24; background: #fff8f8; }
+.d16-card.done-d { border-color: #16a34a; background: #f0fdf4; }
+.d16-card .dc-num { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+.d16-card.done-d .dc-num { color: #16a34a; }
+.d16-card .dc-title { color: #07275D; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.d16-card .dc-prompt { color: #444; font-size: 11px; line-height: 1.5; margin-bottom: 6px; font-style: italic; }
+.d16-card .dc-coach { color: #c41520; font-size: 11px; font-weight: 600; line-height: 1.4; }
+.d16-card.active-d .dc-prompt { color: #07275D; font-style: normal; font-weight: 600; }
+.d16-controls { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
+.d16-progress { color: #888; font-size: 12px; margin-left: auto; }
+
+/* GATE CHECK SLIDE */
+.gate-slide .slide-body { background: #fff; padding: 20px 48px 16px; }
+.gate-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; }
+.gate-card { border-radius: 8px; padding: 13px 14px; border: 2px solid #e0e8f0; background: #f5f8fd; opacity: 0.12; transition: opacity 0.35s, border-color 0.35s, background 0.35s; cursor: default; }
+.gate-card.revealed { opacity: 1; border-color: #07275D; }
+.gate-card.pass-gate { border-color: #16a34a; background: #f0fdf4; }
+.gate-card.fail-gate { border-color: #ED1C24; background: #fff5f5; }
+.gate-card .g-num { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.gate-card .g-title { color: #07275D; font-size: 12px; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+.gate-card .g-question { color: #444; font-size: 11px; line-height: 1.5; margin-bottom: 8px; }
+.gate-card .g-btns { display: flex; gap: 5px; margin-top: 6px; }
+.gate-card .g-btn { flex: 1; padding: 5px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; background: #fff; color: #666; transition: all 0.15s; }
+.gate-card .g-btn.pass { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+.gate-card .g-btn.fail { background: #fff5f5; border-color: #ED1C24; color: #ED1C24; }
+.gate-card .g-verdict { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 6px; display: none; }
+.gate-card.pass-gate .g-verdict { display: block; color: #16a34a; }
+.gate-card.fail-gate .g-verdict { display: block; color: #ED1C24; }
+.gate-summary { background: #f5f8fd; border: 1px solid #dde6f0; border-radius: 6px; padding: 10px 14px; margin-top: 10px; display: flex; align-items: center; gap: 16px; }
+.gate-summary .gs-label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.gate-summary .gs-counts { display: flex; gap: 12px; }
+.gate-summary .gs-pass { color: #16a34a; font-size: 13px; font-weight: 700; }
+.gate-summary .gs-fail { color: #ED1C24; font-size: 13px; font-weight: 700; }
+
+/* D7 LIVE BUILD SLIDE */
+.d7build-slide .slide-body { background: #07275D; padding: 20px 48px 16px; display: flex; flex-direction: column; }
+.build-header { margin-bottom: 14px; }
+.build-header .bh-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.build-header h2 { color: #fff; font-size: 22px; font-weight: 700; }
+.build-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1; }
+.build-step { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 14px 16px; opacity: 0.35; transition: opacity 0.35s, background 0.35s, border-color 0.35s; }
+.build-step.active-step { opacity: 1; background: rgba(255,255,255,0.13); border-color: #ED1C24; }
+.build-step.done-step { opacity: 1; background: rgba(22,163,74,0.15); border-color: rgba(22,163,74,0.5); }
+.build-step .step-num { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.build-step .step-title { color: #fff; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.build-step .step-prompt { color: #a8c4e8; font-size: 12px; line-height: 1.5; font-style: italic; margin-bottom: 8px; }
+.build-step .step-tip { color: #4B89D7; font-size: 11px; line-height: 1.4; }
+.build-step.active-step .step-prompt { color: #e0ecf8; }
+.build-step.active-step .step-num { color: #fff; background: #ED1C24; padding: 1px 7px; border-radius: 3px; display: inline-block; }
+.build-controls { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+.build-status { color: #a8c4e8; font-size: 12px; margin-left: auto; }
+
+/* AI READINESS SLIDE */
+.aiready-slide .slide-body { background: #fff; padding: 20px 48px 16px; }
+.ai-ready-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.ai-ready-panel { border-radius: 8px; padding: 16px 18px; }
+.ai-ready-panel.how { background: #eef3f9; border: 1px solid #c5d8ee; }
+.ai-ready-panel.interpret { background: #fff8e1; border: 1px solid #f5c842; }
+.ai-ready-panel .arp-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
+.how .arp-label { color: #1e3a5f; }
+.interpret .arp-label { color: #92400e; }
+.ai-ready-panel ul { list-style: none; padding: 0; }
+.ai-ready-panel li { font-size: 13px; color: #1a1a1a; line-height: 1.5; padding: 5px 0 5px 16px; position: relative; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.ai-ready-panel li:last-child { border-bottom: none; }
+.ai-ready-panel li::before { content: "›"; position: absolute; left: 0; color: #ED1C24; font-weight: 700; }
+.ai-status-bar { background: #07275D; border-radius: 8px; padding: 12px 18px; margin-top: 12px; display: flex; gap: 24px; align-items: center; }
+.ai-status-bar .asb-item { text-align: center; }
+.ai-status-bar .asb-rating { font-size: 18px; font-weight: 700; border-radius: 6px; padding: 4px 14px; }
+.asb-rating.ready { background: #e8f5e8; color: #2a6b2a; }
+.asb-rating.caution { background: #fff3e0; color: #e65100; }
+.asb-rating.notready { background: #fdecea; color: #c62828; }
+.ai-status-bar .asb-label { color: #a8c4e8; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 3px; }
+.ai-status-bar .asb-desc { color: #e0ecf8; font-size: 12px; margin-left: auto; font-style: italic; }
+
+/* CLOSE SLIDE */
+.close-slide .slide-body { background: #07275D; align-items: center; justify-content: center; text-align: center; padding: 40px 80px; }
+.close-slide h2 { color: #fff; font-size: 32px; font-weight: 700; margin-bottom: 16px; }
+.close-slide .close-sub { color: #a8c4e8; font-size: 17px; font-weight: 300; margin-bottom: 40px; }
+.assignment-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 22px 32px; max-width: 640px; text-align: left; }
+.assignment-box .assign-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+.assignment-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.assignment-box li { color: #e0ecf8; font-size: 13px; line-height: 1.5; display: flex; gap: 10px; }
+.assignment-box li::before { content: ''; width: 6px; height: 6px; background: #ED1C24; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- NOTES PANEL -->
+<div class="notes-panel" id="notes-panel">
+  <h4 id="notes-heading">Facilitator Notes</h4>
+  <div id="notes-content"></div>
+</div>
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide title-slide active"
+  data-notes-en="Set the tone immediately: today participants build their complete 8D project in the tracker — D1 through D8. First 30 minutes is a facilitated build D1–D6, then a 10-minute break, then D7 and D8, then S6 prep. S6 standard: specificity and ownership, not completion. In-progress work presented specifically scores the same as finished work."
+  data-notes-es="Establezca el tono inmediatamente: hoy los participantes construyen su proyecto completo en el rastreador — D1 al D8. Los primeros 30 minutos son una construcción facilitada D1–D6, luego un descanso de 10 minutos, luego D7 y D8, luego preparación para S6.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow" data-en="MBC Companies CI Bootcamp" data-es="Bootcamp de MC — MBC Companies">MBC Companies CI Bootcamp</div>
+    <h1 data-en="Embedding D7–D8" data-es="Consolidando D7–D8">Embedding D7–D8</h1>
+    <div class="title-divider"></div>
+    <div class="subtitle" data-en="Prevention &amp; Recognition" data-es="Prevención y Reconocimiento">Prevention &amp; Recognition</div>
+    <div class="title-meta">
+      <div class="title-meta-item"><div class="label" data-en="Session" data-es="Sesión">Session</div><div class="value">S4</div></div>
+      <div class="title-meta-item"><div class="label" data-en="Week" data-es="Semana">Week</div><div class="value" data-en="4 of 6" data-es="4 de 6">4 of 6</div></div>
+      <div class="title-meta-item"><div class="label" data-en="Duration" data-es="Duración">Duration</div><div class="value" data-en="90 minutes" data-es="90 minutos">90 minutes</div></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter" id="counter-1">1 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()" disabled>&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: AGENDA -->
+<div class="slide agenda-slide"
+  data-notes-en="Walk through the agenda. Remind participants: S3 assignment debrief first — D5–D6 work reviewed. Then D7 (the most skipped discipline). Then D8. Then completing the full arc. Last 20 minutes is S6 presentation prep."
+  data-notes-es="Recorra la agenda. Recuérdeles a los participantes: primero la revisión de la tarea de S3 — trabajo D5–D6. Luego D7 (la disciplina más omitida). Luego D8. Luego completar el arco completo. Los últimos 20 minutos son para la preparación de la presentación de S6.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="Today's Session" data-es="Sesión de Hoy">Today's Session</div>
+    <div class="slide-intro" data-en="Building your complete 8D project plan — D1 through D8" data-es="Construyendo su plan completo de proyecto 8D — D1 al D8">Building your complete 8D project plan — D1 through D8</div>
+    <div class="agenda-items">
+      <div class="agenda-item current"><span class="time">0:00</span><span class="topic" data-en="Live Tracker Build — D1 through D6" data-es="Construcción en Vivo del Rastreador — D1 al D6">Live Tracker Build — D1 through D6</span><span class="tag">30 min</span></div>
+      <div class="agenda-item"><span class="time">0:35</span><span class="topic" data-en="Break" data-es="Descanso">Break</span><span class="tag">10 min</span></div>
+      <div class="agenda-item"><span class="time">0:45</span><span class="topic" data-en="D7 — Prevent Recurrence" data-es="D7 — Prevenir la Recurrencia">D7 — Prevent Recurrence</span><span class="tag">18 min</span></div>
+      <div class="agenda-item"><span class="time">1:03</span><span class="topic" data-en="D8 — Recognize the Team" data-es="D8 — Reconocer al Equipo">D8 — Recognize the Team</span><span class="tag">12 min</span></div>
+      <div class="agenda-item"><span class="time">1:15</span><span class="topic" data-en="Complete 8D Arc + S6 Prep" data-es="Arco 8D Completo + Preparación S6">Complete 8D Arc + S6 Prep</span><span class="tag">13 min</span></div>
+      <div class="agenda-item"><span class="time">1:28</span><span class="topic" data-en="Wrap-Up &amp; Assignment" data-es="Cierre y Tarea">Wrap-Up &amp; Assignment</span><span class="tag">2 min</span></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">2 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: D1–D6 LIVE TRACKER BUILD -->
+<div class="slide d16build-slide"
+  data-notes-en="First time participants use the tracker — no pre-existing data. Walk each discipline card in order. Activate one at a time. Give 2–3 minutes per discipline for participants to enter data, then spot-check 2–3 responses live. Name gaps at the group level. Keep pace: 5 min per discipline, 30 min total. Coach for specificity — push back on vague entries."
+  data-notes-es="Primera vez que los participantes usan el rastreador — sin datos previos. Recorra cada tarjeta de disciplina en orden. Active una a la vez. Dé 2–3 minutos por disciplina para que ingresen datos, luego revise 2–3 respuestas en vivo. Nombre las brechas a nivel grupal. Mantenga el ritmo: 5 min por disciplina, 30 min en total.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="Live Tracker Build — D1 through D6" data-es="Construcción en Vivo — D1 al D6">Live Tracker Build — D1 through D6</div>
+    <div class="slide-intro" data-en="Open your tracker · Activate each discipline · Enter your project data · 30 minutes" data-es="Abra su rastreador · Active cada disciplina · Ingrese sus datos · 30 minutos">Open your tracker · Activate each discipline · Enter your project data · 30 minutes</div>
+    <div class="d16-grid">
+      <div class="d16-card" id="dc1">
+        <div class="dc-num" data-en="D1 · ~4 min" data-es="D1 · ~4 min">D1 · ~4 min</div>
+        <div class="dc-title" data-en="Team Formation" data-es="Formación del Equipo">Team Formation</div>
+        <div class="dc-prompt" data-en="Enter team members — name, role, knowledge they bring. Name your champion as an individual." data-es="Ingrese los miembros del equipo — nombre, rol, conocimiento que aportan. Nombre a su campeón como individuo.">Enter team members — name, role, knowledge they bring. Name your champion as an individual.</div>
+        <div class="dc-coach" data-en="Push back: champion must be a named person, not a department." data-es="Presione: el campeón debe ser una persona nombrada, no un departamento.">Push back: champion must be a named person, not a department.</div>
+      </div>
+      <div class="d16-card" id="dc2">
+        <div class="dc-num" data-en="D2 · ~5 min" data-es="D2 · ~5 min">D2 · ~5 min</div>
+        <div class="dc-title" data-en="Problem Description" data-es="Descripción del Problema">Problem Description</div>
+        <div class="dc-prompt" data-en="Enter the observable condition — not the cause, not the fix. Complete the Is/Is Not. Quantify the impact." data-es="Ingrese la condición observable — no la causa, no la solución. Complete el Es/No Es. Cuantifique el impacto.">Enter the observable condition — not the cause, not the fix. Complete the Is/Is Not. Quantify the impact.</div>
+        <div class="dc-coach" data-en="If the problem statement contains 'caused by' or 'need to' — rewrite it." data-es="Si el enunciado contiene 'causado por' o 'necesitamos' — reescríbalo.">If the problem statement contains 'caused by' or 'need to' — rewrite it.</div>
+      </div>
+      <div class="d16-card" id="dc3">
+        <div class="dc-num" data-en="D3 · ~3 min" data-es="D3 · ~3 min">D3 · ~3 min</div>
+        <div class="dc-title" data-en="Containment Actions" data-es="Acciones de Contención">Containment Actions</div>
+        <div class="dc-prompt" data-en="What did you do to stop further harm while root cause work ran? Named owner + removal trigger for each action." data-es="¿Qué hizo para detener el daño mientras se trabajaba en la causa raíz? Responsable nombrado + disparador de retiro para cada acción.">What did you do to stop further harm? Named owner + removal trigger for each action.</div>
+        <div class="dc-coach" data-en="No removal trigger = containment that never comes off." data-es="Sin disparador de retiro = contención que nunca se retira.">No removal trigger = containment that never comes off.</div>
+      </div>
+      <div class="d16-card" id="dc4">
+        <div class="dc-num" data-en="D4 · ~6 min" data-es="D4 · ~6 min">D4 · ~6 min</div>
+        <div class="dc-title" data-en="Root Cause Analysis" data-es="Análisis de Causa Raíz">Root Cause Analysis</div>
+        <div class="dc-prompt" data-en="Enter your 5 Whys from the D2 problem. Why 5 must be a systemic condition — not a person, not a behavior. Fill fishbone categories. State your root cause validation." data-es="Ingrese sus 5 Por Qués desde el problema D2. El Por Qué 5 debe ser una condición sistémica. Complete las categorías del Ishikawa.">Enter 5 Whys from D2. Why 5 = systemic condition. Fill fishbone. State validation.</div>
+        <div class="dc-coach" data-en="'Operator didn't follow procedure' is not a root cause. Why didn't they? Keep asking." data-es="'El operador no siguió el procedimiento' no es causa raíz. ¿Por qué no lo hizo? Siga preguntando.">'Operator didn't follow procedure' is not a root cause. Keep asking why.</div>
+      </div>
+      <div class="d16-card" id="dc5">
+        <div class="dc-num" data-en="D5 · ~5 min" data-es="D5 · ~5 min">D5 · ~5 min</div>
+        <div class="dc-title" data-en="Corrective Actions" data-es="Acciones Correctivas">Corrective Actions</div>
+        <div class="dc-prompt" data-en="Enter the permanent fix for the D4 root cause. Answer the alignment test: after this is implemented, can the root cause still exist?" data-es="Ingrese la solución permanente para la causa raíz del D4. Responda la prueba de alineación: ¿puede seguir existiendo la causa raíz?">Enter the permanent fix for D4 root cause. Answer the alignment test.</div>
+        <div class="dc-coach" data-en="Alignment test answer = yes? It's a workaround. What changes in the system?" data-es="¿Respuesta de prueba = sí? Es una solución provisional. ¿Qué cambia en el sistema?">Alignment test = yes? It's a workaround. What changes in the system?</div>
+      </div>
+      <div class="d16-card" id="dc6">
+        <div class="dc-num" data-en="D6 · ~5 min" data-es="D6 · ~5 min">D6 · ~5 min</div>
+        <div class="dc-title" data-en="Validate the Fix" data-es="Validar la Solución">Validate the Fix</div>
+        <div class="dc-prompt" data-en="Enter: specific metric · baseline before implementation · quantified threshold + timeframe · named owner. Results status: in progress, confirmed, or not yet started." data-es="Ingrese: métrica específica · línea base antes de implementación · umbral cuantificado + plazo · responsable nombrado. Estado de resultados.">Metric · baseline · threshold + timeframe · named owner · current status.</div>
+        <div class="dc-coach" data-en="No baseline = unverifiable. No named owner = unowned. 'The problem goes away' is not a threshold." data-es="Sin línea base = no verificable. Sin responsable = sin dueño. 'El problema desaparece' no es un umbral.">No baseline = unverifiable. No named owner = unowned.</div>
+      </div>
+    </div>
+    <div class="d16-controls">
+      <button class="ctrl-btn" id="d16-reveal-btn" onclick="revealNextD16()">
+        <span data-en="Activate next discipline →" data-es="Activar siguiente disciplina →">Activate next discipline →</span>
+      </button>
+      <button class="ctrl-btn secondary" onclick="resetD16()">
+        <span data-en="Reset" data-es="Reiniciar">Reset</span>
+      </button>
+      <span class="d16-progress" id="d16-progress" data-en-template="X of 6 disciplines" data-es-template="X de 6 disciplinas">0 of 6 disciplines</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">3 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: BREAK -->
+<div class="slide divider-slide"
+  data-notes-en="Before releasing for break: confirm everyone has saved their tracker. Remind them to enter their Anthropic API key in the tracker Settings (gear icon, top right) before returning — needed for the AI Review in Block 5. Back at 0:45."
+  data-notes-es="Antes del descanso: confirme que todos hayan guardado su rastreador. Recuérdeles que ingresen su clave API de Anthropic en Configuración del rastreador (ícono de engranaje) antes de regresar — necesaria para la Revisión IA en el Bloque 5. De vuelta a las 0:45.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="block-num" style="font-size:56px">☕</div>
+    <div class="block-title" data-en="10-Minute Break" data-es="Descanso de 10 Minutos">10-Minute Break</div>
+    <div class="block-sub" data-en="D1–D6 complete · Back at 0:45" data-es="D1–D6 completos · De vuelta a las 0:45">D1–D6 complete · Back at 0:45</div>
+    <div class="prompt-box">
+      <p data-en="Before you step away: save your tracker. Enter your Anthropic API key in Settings (gear icon, top right) — you will need it for the AI Review later." data-es="Antes de salir: guarde su rastreador. Ingrese su clave API de Anthropic en Configuración (ícono de engranaje, arriba a la derecha) — la necesitará para la Revisión IA más tarde.">Before you step away: save your tracker. Enter your Anthropic API key in Settings (gear icon, top right) — you will need it for the AI Review later.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">4 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: D7 COMPONENTS — INTERACTIVE BUILD -->
+<div class="slide d7-slide"
+  data-notes-en="Reveal each D7 component one at a time. For each: state what it is, give the specific example of what strong looks like, and name the most common resistance. D7-4 (similar processes) is the most commonly skipped — spend extra time here."
+  data-notes-es="Revele cada componente del D7 de uno en uno. Para cada uno: indique qué es, dé el ejemplo específico de cómo se ve uno sólido, y nombre la resistencia más común. D7-4 (procesos similares) es el más comúnmente omitido — dedíquele tiempo adicional.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="D7 — Prevent Recurrence" data-es="D7 — Prevenir la Recurrencia">D7 — Prevent Recurrence</div>
+    <div class="slide-intro" data-en="Four components — all required. Reveal each one as you teach it." data-es="Cuatro componentes — todos requeridos. Revele cada uno mientras lo enseña.">Four components — all required. Reveal each one as you teach it.</div>
+    <div class="d7-grid">
+      <div class="d7-card" id="d7c1">
+        <div class="comp-label" data-en="Component 1" data-es="Componente 1">Component 1</div>
+        <div class="comp-title" data-en="SOP &amp; Work Instruction Updates" data-es="Actualización de POEs e Instrucciones de Trabajo">SOP &amp; Work Instruction Updates</div>
+        <div class="comp-desc" data-en="Update the procedure that governs the process where root cause was found. Name the document, owner, and completion date." data-es="Actualice el procedimiento que rige el proceso donde se encontró la causa raíz. Nombre el documento, responsable y fecha.">Update the procedure that governs the process where root cause was found. Name the document, owner, and completion date.</div>
+        <div class="comp-test" data-en="If there is no SOP — D7 means creating one." data-es="Si no existe un POE — el D7 significa crearlo.">If there is no SOP — D7 means creating one.</div>
+      </div>
+      <div class="d7-card" id="d7c2">
+        <div class="comp-label" data-en="Component 2" data-es="Componente 2">Component 2</div>
+        <div class="comp-title" data-en="Training Implications" data-es="Implicaciones de Capacitación">Training Implications</div>
+        <div class="comp-desc" data-en="If the fix requires anyone to do something differently — they must be trained. Who, on what, and by when. An SOP nobody has seen doesn't prevent recurrence." data-es="Si la solución requiere que alguien haga algo diferente — debe ser capacitado. Quién, en qué y cuándo. Un POE que nadie ha visto no previene la recurrencia.">If the fix requires anyone to do something differently — they must be trained. Who, on what, and by when. An SOP nobody has seen doesn't prevent recurrence.</div>
+      </div>
+      <div class="d7-card" id="d7c3">
+        <div class="comp-label" data-en="Component 3" data-es="Componente 3">Component 3</div>
+        <div class="comp-title" data-en="PM &amp; Maintenance Schedule Updates" data-es="Actualización de Programa de Mantenimiento Preventivo">PM &amp; Maintenance Schedule Updates</div>
+        <div class="comp-desc" data-en="If root cause involved equipment condition or maintenance frequency — update the PM schedule. Change it in the system, not on a sticky note." data-es="Si la causa raíz involucró condición del equipo o frecuencia de mantenimiento — actualice el programa de MP. Cámbielo en el sistema, no en una nota adhesiva.">If root cause involved equipment condition or maintenance frequency — update the PM schedule. Change it in the system, not on a sticky note.</div>
+      </div>
+      <div class="d7-card" id="d7c4">
+        <div class="comp-label" data-en="Component 4" data-es="Componente 4">Component 4</div>
+        <div class="comp-title" data-en="Systemic Prevention — Similar Processes at Risk" data-es="Prevención Sistémica — Procesos Similares en Riesgo">Systemic Prevention — Similar Processes at Risk</div>
+        <div class="comp-desc" data-en="Where else does this vulnerability exist? Same equipment type? Same process step? Different facility? Identify them — then close them." data-es="¿Dónde más existe esta vulnerabilidad? ¿Mismo tipo de equipo? ¿Mismo paso del proceso? ¿Planta diferente? Identifíquelos — luego ciérrelos.">Where else does this vulnerability exist? Same equipment type? Same process step? Different facility? Identify them — then close them.</div>
+        <div class="comp-test" data-en="This list feeds Phase 2 scope directly." data-es="Esta lista alimenta directamente el alcance de la Fase 2.">This list feeds Phase 2 scope directly.</div>
+      </div>
+    </div>
+    <div class="d7-controls">
+      <button class="ctrl-btn" id="d7-reveal-btn" onclick="revealNextD7()">
+        <span data-en="Reveal next component →" data-es="Revelar siguiente componente →">Reveal next component →</span>
+      </button>
+      <button class="ctrl-btn secondary" onclick="resetD7()">
+        <span data-en="Reset" data-es="Reiniciar">Reset</span>
+      </button>
+      <span class="ctrl-progress" id="d7-progress" data-en-template="X of 4 components" data-es-template="X de 4 componentes">0 of 4 components</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">5 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: D7 LIVE BUILD IN TRACKER -->
+<div class="slide d7build-slide"
+  data-notes-en="All participants should have their tracker open before this slide. Run each step sequentially — say the prompt, give 90 seconds, then spot-check 1–2 responses live. Give direct feedback: 'That's strong' or 'Too vague — you need a specific document name.' The goal is entering real data, not thinking about it."
+  data-notes-es="Todos los participantes deben tener su rastreador abierto antes de esta diapositiva. Ejecute cada paso secuencialmente — diga el indicador, dé 90 segundos, luego revise 1–2 respuestas en vivo. Dé retroalimentación directa. El objetivo es ingresar datos reales, no solo pensar en ellos.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="build-header">
+      <div class="bh-label" data-en="Live Exercise — Open Your Tracker to D7" data-es="Ejercicio en Vivo — Abra su Rastreador en D7">Live Exercise — Open Your Tracker to D7</div>
+      <h2 data-en="Build D7 Now — Not as Homework" data-es="Construya D7 Ahora — No como Tarea">Build D7 Now — Not as Homework</h2>
+    </div>
+    <div class="build-steps">
+      <div class="build-step" id="bs1">
+        <div class="step-num" data-en="Step 1 · 90 sec" data-es="Paso 1 · 90 seg">Step 1 · 90 sec</div>
+        <div class="step-title" data-en="Documentation Update" data-es="Actualización de Documentación">Documentation Update</div>
+        <div class="step-prompt" data-en="&ldquo;Name one SOP or work instruction that needs to be updated because of what your project found. Enter the document name, the specific change, the owner, and the completion date.&rdquo;" data-es="&ldquo;Nombre un POE o instrucción de trabajo que deba actualizarse por lo que encontró su proyecto. Ingrese el nombre del documento, el cambio específico, el responsable y la fecha.&rdquo;">"Name one SOP or work instruction that needs to be updated. Enter the document name, change, owner, and date."</div>
+        <div class="step-tip" data-en="If no SOP exists — create one. The fix cannot live only in people's heads." data-es="Si no existe un POE — créelo. La solución no puede vivir solo en las cabezas de las personas.">If no SOP exists — create one. The fix cannot live only in people's heads.</div>
+      </div>
+      <div class="build-step" id="bs2">
+        <div class="step-num" data-en="Step 2 · 60 sec" data-es="Paso 2 · 60 seg">Step 2 · 60 sec</div>
+        <div class="step-title" data-en="Training Plan" data-es="Plan de Capacitación">Training Plan</div>
+        <div class="step-prompt" data-en="&ldquo;Who needs to know about this fix? Enter the role or name, the method, and the timeline. Include anyone on a different shift, line, or facility who does the same process.&rdquo;" data-es="&ldquo;¿Quién necesita saber sobre esta solución? Ingrese el rol o nombre, el método y el cronograma. Incluya a cualquiera en un turno, línea o planta diferente que realice el mismo proceso.&rdquo;">"Who needs to know about this fix? Enter the role, method, and timeline — including other shifts or facilities."</div>
+        <div class="step-tip" data-en="An SOP nobody has seen doesn't prevent recurrence." data-es="Un POE que nadie ha visto no previene la recurrencia.">An SOP nobody has seen doesn't prevent recurrence.</div>
+      </div>
+      <div class="build-step" id="bs3">
+        <div class="step-num" data-en="Step 3 · 60 sec" data-es="Paso 3 · 60 seg">Step 3 · 60 sec</div>
+        <div class="step-title" data-en="Similar Processes at Risk" data-es="Procesos Similares en Riesgo">Similar Processes at Risk</div>
+        <div class="step-prompt" data-en="&ldquo;Name one other line, area, or facility where the same vulnerability could exist. Same equipment type? Same changeover type? Same process step? Enter it in the Similar Processes field.&rdquo;" data-es="&ldquo;Nombre otra línea, área o planta donde pueda existir la misma vulnerabilidad. ¿Mismo tipo de equipo? ¿Mismo tipo de cambio? ¿Mismo paso del proceso? Ingréselo en el campo de Procesos Similares.&rdquo;">"Name one other line, area, or facility with the same vulnerability. Enter it in Similar Processes."</div>
+        <div class="step-tip" data-en="This list is Phase 2 scope. If the field is empty, look harder." data-es="Esta lista es el alcance de la Fase 2. Si el campo está vacío, busque más.">This list is Phase 2 scope. If the field is empty, look harder.</div>
+      </div>
+    </div>
+    <div class="build-controls">
+      <button class="ctrl-btn" id="build-reveal-btn" onclick="revealNextStep()" style="background:#ED1C24;border:none;">
+        <span data-en="Activate next step →" data-es="Activar siguiente paso →">Activate next step →</span>
+      </button>
+      <button class="ctrl-btn secondary" onclick="resetBuild()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);color:#fff;">
+        <span data-en="Reset" data-es="Reiniciar">Reset</span>
+      </button>
+      <span class="build-status" id="build-status" data-en="0 of 3 steps" data-es="0 de 3 pasos">0 of 3 steps</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">6 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: D8 DIVIDER -->
+<div class="slide divider-slide"
+  data-notes-en="Pause before revealing D8. Say: 'I want to address the eye-roll some of you are doing internally right now. D8 is not a participation trophy. It is a leadership behavior. Teams that feel their work is noticed solve problems better.' Then advance to the D8 qualities slide."
+  data-notes-es="Pause antes de revelar el D8. Diga: 'Quiero abordar el escepticismo que algunos de ustedes tienen internamente ahora mismo. El D8 no es un trofeo de participación. Es un comportamiento de liderazgo. Los equipos que sienten que su trabajo es reconocido resuelven problemas mejor.' Luego avance a la diapositiva de cualidades del D8.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="block-num">D8</div>
+    <div class="block-title" data-en="Recognize the Team" data-es="Reconocer al Equipo">Recognize the Team</div>
+    <div class="block-sub" data-en="The discipline that signals what your organization values" data-es="La disciplina que señala lo que su organización valora">The discipline that signals what your organization values</div>
+    <div class="prompt-box">
+      <p data-en="D8 is not ceremony. It is a leadership behavior that determines whether the next problem gets solved as well as this one." data-es="El D8 no es una ceremonia. Es un comportamiento de liderazgo que determina si el próximo problema se resolverá tan bien como este.">D8 is not ceremony. It is a leadership behavior that determines whether the next problem gets solved as well as this one.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">7 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: D8 THREE QUALITIES — INTERACTIVE -->
+<div class="slide d8-slide"
+  data-notes-en="Reveal each quality one at a time. Read the title, description, and example. After all three: ask 'Which of these is hardest to do consistently at your facility?' This usually generates real discussion — it surfaces the cultural barriers to D8."
+  data-notes-es="Revele cada cualidad de una en una. Lea el título, la descripción y el ejemplo. Después de las tres: pregunte '¿Cuál de estas es la más difícil de hacer de manera consistente en su planta?' Esto generalmente genera una discusión real.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="D8 — Three Qualities of Effective Recognition" data-es="D8 — Tres Cualidades del Reconocimiento Efectivo">D8 — Three Qualities of Effective Recognition</div>
+    <div class="slide-intro" data-en="All three are required. Generic praise is not D8." data-es="Las tres son requeridas. El elogio genérico no es D8.">All three are required. Generic praise is not D8.</div>
+    <div class="d8-qualities">
+      <div class="d8-quality" id="d8q1">
+        <div class="q-num">1</div>
+        <div class="q-title" data-en="Specific" data-es="Específico">Specific</div>
+        <div class="q-desc" data-en="Names the people, the problem, and the measurable result. Not 'thank you for your hard work.' The result is part of the recognition." data-es="Nombra a las personas, el problema y el resultado medible. No 'gracias por su arduo trabajo.' El resultado es parte del reconocimiento.">Names the people, the problem, and the measurable result. Not 'thank you for your hard work.' The result is part of the recognition.</div>
+        <div class="q-example" data-en="'The Line 3 team reduced changeover downtime from 45 min/shift to under 10 — that is the standard for how we solve problems here.'" data-es="'El equipo de la Línea 3 redujo el tiempo muerto durante los cambios de formato de 45 min/turno a menos de 10 — ese es el estándar de cómo resolvemos problemas aquí.'">'The Line 3 team reduced changeover downtime from 45 min/shift to under 10 — that is the standard for how we solve problems here.'</div>
+      </div>
+      <div class="d8-quality" id="d8q2">
+        <div class="q-num">2</div>
+        <div class="q-title" data-en="Sincere" data-es="Sincero">Sincere</div>
+        <div class="q-desc" data-en="Connects the result to real operational value. The leader demonstrates they understand what the team did and why it mattered — not scripted praise." data-es="Conecta el resultado con el valor operacional real. El líder demuestra que comprende lo que el equipo hizo y por qué importó — no es un elogio guionizado.">Connects the result to real operational value. The leader demonstrates they understand what the team did and why it mattered — not scripted praise.</div>
+        <div class="q-example" data-en="Reference the specific problem. Name the root cause they found. Connect it to production, quality, or safety outcomes." data-es="Haga referencia al problema específico. Nombre la causa raíz que encontraron. Conéctelo con resultados de producción, calidad o seguridad.">Reference the specific problem. Name the root cause they found. Connect it to production, quality, or safety outcomes.</div>
+      </div>
+      <div class="d8-quality" id="d8q3">
+        <div class="q-num">3</div>
+        <div class="q-title" data-en="Timely" data-es="Oportuno">Timely</div>
+        <div class="q-desc" data-en="Within one week of D6 validation confirmation. Not at the annual review. Not three months later. Recognition that arrives late loses its signal value." data-es="Dentro de una semana de la confirmación de validación del D6. No en la evaluación anual. No tres meses después. El reconocimiento que llega tarde pierde su valor de señal.">Within one week of D6 validation confirmation. Not at the annual review. Not three months later. Recognition that arrives late loses its signal value.</div>
+        <div class="q-example" data-en="Forum: team meeting, all-facility email, posted results board. The forum matters less than the visibility." data-es="Foro: reunión de equipo, correo a la planta, tablero de resultados. El foro importa menos que la visibilidad.">Forum: team meeting, all-facility email, posted results board. The forum matters less than the visibility.</div>
+      </div>
+    </div>
+    <div class="d7-controls">
+      <button class="ctrl-btn" id="d8-reveal-btn" onclick="revealNextD8()">
+        <span data-en="Reveal next quality →" data-es="Revelar siguiente cualidad →">Reveal next quality →</span>
+      </button>
+      <button class="ctrl-btn secondary" onclick="resetD8()">
+        <span data-en="Reset" data-es="Reiniciar">Reset</span>
+      </button>
+      <span class="ctrl-progress" id="d8-progress" data-en-template="X of 3 qualities" data-es-template="X de 3 cualidades">0 of 3 qualities</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">8 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: COMPLETE 8D ARC -->
+<div class="slide arc-slide"
+  data-notes-en="Walk the full arc as a complete system. D7 and D8 are highlighted. Key message: 'A complete 8D is a document that tells the story of a problem from first response to sustained resolution. That is what each of you is building for S6.' Ask: who feels confident about all 8 disciplines in their project right now?"
+  data-notes-es="Recorra el arco completo como un sistema. D7 y D8 están resaltados. Mensaje clave: 'Un 8D completo es un documento que narra la historia de un problema desde la primera respuesta hasta la resolución sostenida. Eso es lo que cada uno de ustedes está construyendo para S6.'">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="The Complete 8D Arc" data-es="El Arco 8D Completo">The Complete 8D Arc</div>
+    <div class="slide-intro" data-en="D1–D8 as a connected system — D7 and D8 complete the arc" data-es="D1–D8 como un sistema conectado — D7 y D8 completan el arco">D1–D8 as a connected system — D7 and D8 complete the arc</div>
+    <div class="arc-complete">
+      <div class="arc-card"><div class="d-num">D1</div><div class="d-title" data-en="Team Formation" data-es="Formación del Equipo">Team Formation</div><div class="d-desc" data-en="Right cross-functional team before describing the problem" data-es="Equipo multifuncional correcto antes de describir el problema">Right cross-functional team before describing the problem</div></div>
+      <div class="arc-card"><div class="d-num">D2</div><div class="d-title" data-en="Problem Description" data-es="Descripción del Problema">Problem Description</div><div class="d-desc" data-en="Is/Is Not analysis — location, frequency, measurable impact" data-es="Análisis Es/No Es — ubicación, frecuencia, impacto medible">Is/Is Not analysis — location, frequency, measurable impact</div></div>
+      <div class="arc-card"><div class="d-num">D3</div><div class="d-title" data-en="Containment" data-es="Contención">Containment</div><div class="d-desc" data-en="Stop further harm — temporary and intentional" data-es="Detener el daño — temporal e intencional">Stop further harm — temporary and intentional</div></div>
+      <div class="arc-card"><div class="d-num">D4</div><div class="d-title" data-en="Root Cause Analysis" data-es="Análisis de Causa Raíz">Root Cause Analysis</div><div class="d-desc" data-en="5 Whys and Fishbone — verified root cause, not probable guess" data-es="5 Por Qués e Ishikawa — causa raíz verificada, no suposición">5 Whys and Fishbone — verified root cause, not probable guess</div></div>
+      <div class="arc-card"><div class="d-num">D5</div><div class="d-title" data-en="Corrective Actions" data-es="Acciones Correctivas">Corrective Actions</div><div class="d-desc" data-en="Permanent fix for verified root cause — not the symptom" data-es="Solución permanente para la causa raíz verificada — no el síntoma">Permanent fix for verified root cause — not the symptom</div></div>
+      <div class="arc-card"><div class="d-num">D6</div><div class="d-title" data-en="Validate the Fix" data-es="Validar la Solución">Validate the Fix</div><div class="d-desc" data-en="Specific metric, defined timeframe, named owner — proof, not assumption" data-es="Métrica específica, plazo definido, responsable designado — prueba, no suposición">Specific metric, defined timeframe, named owner — proof, not assumption</div></div>
+      <div class="arc-card d7-highlight"><div class="d-num">D7 ← NEW</div><div class="d-title" data-en="Prevent Recurrence" data-es="Prevenir la Recurrencia">Prevent Recurrence</div><div class="d-desc" data-en="Update SOPs, training, PM schedules. Identify similar processes at risk." data-es="Actualizar POEs, capacitación, programas de MP. Identificar procesos similares en riesgo.">Update SOPs, training, PM schedules. Identify similar processes at risk.</div></div>
+      <div class="arc-card d8-highlight"><div class="d-num">D8 ← NEW</div><div class="d-title" data-en="Recognize the Team" data-es="Reconocer al Equipo">Recognize the Team</div><div class="d-desc" data-en="Specific, sincere, timely. Signals what the organization values." data-es="Específico, sincero, oportuno. Señala lo que la organización valora.">Specific, sincere, timely. Signals what the organization values.</div></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">9 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: S6 PREP DIVIDER -->
+<div class="slide divider-slide"
+  data-notes-en="Transition: 'Now let's make sure everyone knows exactly what S6 requires. The next two slides cover the presentation format and the rubric. Review both carefully — these define what a complete presentation looks like.'"
+  data-notes-es="Transición: 'Ahora asegurémonos de que todos sepan exactamente lo que requiere S6. Las próximas dos diapositivas cubren el formato de la presentación y la rúbrica. Revíselas cuidadosamente — definen cómo es una presentación completa.'">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="block-num">S6</div>
+    <div class="block-title" data-en="Presentation Prep" data-es="Preparación para la Presentación">Presentation Prep</div>
+    <div class="block-sub" data-en="Format, rubric, and what strong work looks like" data-es="Formato, rúbrica y cómo se ve un trabajo sólido">Format, rubric, and what strong work looks like</div>
+    <div class="prompt-box">
+      <p data-en="S6 is not about finished results. It is about a complete project plan: what you are doing, who owns it, and where it stands. In-progress work presented with specifics scores the same as completed work." data-es="S6 no se trata de resultados terminados. Se trata de un plan de proyecto completo: qué está haciendo, quién es responsable y cuál es el estado. El trabajo en curso presentado con detalles puntúa igual que el trabajo completado.">S6 is not about finished results. It is about a complete project plan: what you are doing, who owns it, and where it stands.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">10 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: PRESENTATION RUBRIC -->
+<div class="slide rubric-slide"
+  data-notes-en="Walk each rubric dimension. For each: read what strong looks like, then ask 'Where does your project stand on this dimension right now?' This creates a self-assessment moment. Note any dimensions where participants express uncertainty — those are coaching opportunities before S6."
+  data-notes-es="Recorra cada dimensión de la rúbrica. Para cada una: lea cómo se ve lo sólido, luego pregunte '¿Dónde está su proyecto en esta dimensión ahora mismo?' Esto crea un momento de autoevaluación.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="S6 Scoring Rubric" data-es="Rúbrica de Evaluación S6">S6 Scoring Rubric</div>
+    <div class="slide-intro" data-en="Standard: specificity and ownership — not completion · In-progress work presented with specifics scores the same as completed work" data-es="Estándar: especificidad y responsabilidad — no finalización · Trabajo en curso presentado con detalles puntúa igual que trabajo terminado">Standard: specificity and ownership — not completion</div>
+    <table class="rubric-table">
+      <thead>
+        <tr>
+          <th data-en="Dimension" data-es="Dimensión">Dimension</th>
+          <th data-en="What Strong Looks Like" data-es="Cómo se Ve lo Sólido">What Strong Looks Like</th>
+          <th data-en="What Fails" data-es="Qué Falla">What Fails</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="dim" data-en="Problem Definition (D2)" data-es="Definición del Problema (D2)">Problem Definition (D2)</td>
+          <td data-en="Observable condition. Is/Is Not complete. Impact quantified." data-es="Condición observable. Es/No Es completo. Impacto cuantificado.">Observable condition. Is/Is Not complete. Impact quantified.</td>
+          <td data-en="Cause in the problem statement. No numbers." data-es="Causa en el enunciado. Sin números.">Cause in problem statement. No numbers.</td>
+        </tr>
+        <tr>
+          <td class="dim" data-en="Root Cause Rigor (D4)" data-es="Rigurosidad de Causa Raíz (D4)">Root Cause Rigor (D4)</td>
+          <td data-en="Why 5 is a systemic condition. Validation statement confirms fix stops the problem." data-es="Por Qué 5 es una condición sistémica. Validación confirma que la solución detiene el problema.">Why 5 = systemic condition. Validation statement present.</td>
+          <td data-en="Why 5 is a person or behavior. No validation." data-es="Por Qué 5 es una persona o comportamiento. Sin validación.">Why 5 is a person or behavior. No validation.</td>
+        </tr>
+        <tr>
+          <td class="dim" data-en="Corrective Action (D5)" data-es="Acción Correctiva (D5)">Corrective Action (D5)</td>
+          <td data-en="Action eliminates D4 root cause. Alignment test answered: root cause cannot persist after implementation." data-es="La acción elimina la causa raíz del D4. Prueba de alineación respondida.">Eliminates D4 root cause. Alignment test answered.</td>
+          <td data-en="Addresses symptom from D2, not root cause from D4." data-es="Aborda síntoma del D2, no causa raíz del D4.">Addresses symptom not root cause.</td>
+        </tr>
+        <tr>
+          <td class="dim" data-en="Validation Plan (D6)" data-es="Plan de Validación (D6)">Validation Plan (D6)</td>
+          <td data-en="Specific metric · baseline documented · quantified threshold + timeframe · named owner · status reported honestly (in progress is acceptable)" data-es="Métrica específica · línea base documentada · umbral cuantificado + plazo · responsable nombrado · estado reportado honestamente">Metric + baseline + threshold + named owner + honest status.</td>
+          <td data-en="No metric. No baseline. No named owner. 'The problem went away.'" data-es="Sin métrica. Sin línea base. Sin responsable. 'El problema desapareció.'">No metric, no baseline, no owner.</td>
+        </tr>
+        <tr>
+          <td class="dim" data-en="Prevention Plan (D7)" data-es="Plan de Prevención (D7)">Prevention Plan (D7)</td>
+          <td data-en="Specific documents named · specific changes described · named owner · completion date · status reported (complete or in progress both acceptable)" data-es="Documentos específicos nombrados · cambios específicos · responsable nombrado · fecha · estado reportado">Named document + specific change + owner + date + status.</td>
+          <td data-en="'We will update the SOPs' with no name, no date." data-es="'Actualizaremos los POEs' sin nombre ni fecha.">'We will update the SOPs' — no name, no date.</td>
+        </tr>
+        <tr>
+          <td class="dim" data-en="Recognition Plan (D8)" data-es="Plan de Reconocimiento (D8)">Recognition Plan (D8)</td>
+          <td data-en="Specific people named · what they solved stated · impact quantified · forum and date identified (planned or delivered both acceptable)" data-es="Personas específicas nombradas · qué resolvieron · impacto cuantificado · foro y fecha identificados">Named people + what solved + impact + forum + date.</td>
+          <td data-en="'The team will be recognized.' No names. No date." data-es="'El equipo será reconocido.' Sin nombres. Sin fecha.">'Team will be recognized.' No names, no date.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">11 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: AI READINESS REVIEW -->
+<div class="slide aiready-slide"
+  data-notes-en="Remind participants: API key must be set in the tracker Settings (gear icon) before running this. Ask everyone to open tracker, save their D7 work, then hit AI Review. Give 20 seconds. Once results appear: 'Look at your overall rating first, then the discipline breakdown. Your top priority is at the bottom — that is your S6 gap list.' Ask 1–2 volunteers to share their top priority item."
+  data-notes-es="Recuerde a los participantes: la clave API debe estar configurada en Configuración del rastreador (ícono de engranaje) antes de ejecutar esto. Pida a todos que abran el rastreador, guarden su trabajo de D7 y luego presionen Revisión IA. Espere 20 segundos. Una vez que aparezcan los resultados: 'Miren su calificación general primero, luego el desglose por disciplina.'">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="AI Readiness Review — Run It Now" data-es="Revisión de Preparación IA — Ejecútela Ahora">AI Readiness Review — Run It Now</div>
+    <div class="slide-intro" data-en="Open your tracker · Save D7 and D8 work · Hit AI Review · Read your gap list" data-es="Abra su rastreador · Guarde trabajo D7 y D8 · Presione Revisión IA · Lea su lista de brechas">Open your tracker · Save D7 and D8 work · Hit AI Review · Read your gap list</div>
+    <div class="ai-ready-grid">
+      <div class="ai-ready-panel how">
+        <div class="arp-label" data-en="What the AI Review Evaluates" data-es="Qué Evalúa la Revisión IA">What the AI Review Evaluates</div>
+        <ul>
+          <li data-en="<strong>D2:</strong> Is the problem statement observable and measurable — not a cause?" data-es="<strong>D2:</strong> ¿El enunciado del problema es observable y medible — no una causa?"><strong>D2:</strong> Is the problem statement observable and measurable — not a cause?</li>
+          <li data-en="<strong>D4:</strong> Does Why 5 reach a systemic root cause — not a symptom?" data-es="<strong>D4:</strong> ¿El Por Qué 5 llega a una causa raíz sistémica — no a un síntoma?"><strong>D4:</strong> Does Why 5 reach a systemic root cause — not a symptom?</li>
+          <li data-en="<strong>D5:</strong> Does the corrective action eliminate the D4 root cause?" data-es="<strong>D5:</strong> ¿La acción correctiva elimina la causa raíz del D4?"><strong>D5:</strong> Does the corrective action eliminate the D4 root cause?</li>
+          <li data-en="<strong>D6:</strong> Is there a metric, baseline, and quantified success threshold?" data-es="<strong>D6:</strong> ¿Hay una métrica, línea base y umbral de éxito cuantificado?"><strong>D6:</strong> Is there a metric, baseline, and quantified success threshold?</li>
+          <li data-en="<strong>D7:</strong> Are specific documents named with owners and dates?" data-es="<strong>D7:</strong> ¿Hay documentos específicos nombrados con responsables y fechas?"><strong>D7:</strong> Are specific documents named with owners and dates?</li>
+          <li data-en="<strong>D8:</strong> Is impact quantified? Is the recognition plan specific?" data-es="<strong>D8:</strong> ¿El impacto está cuantificado? ¿El plan de reconocimiento es específico?"><strong>D8:</strong> Is impact quantified? Is the recognition plan specific?</li>
+        </ul>
+      </div>
+      <div class="ai-ready-panel interpret">
+        <div class="arp-label" data-en="How to Read Your Results" data-es="Cómo Leer sus Resultados">How to Read Your Results</div>
+        <ul>
+          <li data-en="<strong>Overall rating first</strong> — Ready / Needs Work / Not Ready for S6" data-es="<strong>Calificación general primero</strong> — Listo / Necesita Trabajo / No Listo para S6"><strong>Overall rating first</strong> — Ready / Needs Work / Not Ready for S6</li>
+          <li data-en="<strong>Discipline breakdown</strong> — Strong / Needs Work / Incomplete for each D1–D8" data-es="<strong>Desglose por disciplina</strong> — Sólido / Necesita Trabajo / Incompleto para cada D1–D8"><strong>Discipline breakdown</strong> — Strong / Needs Work / Incomplete for each D1–D8</li>
+          <li data-en="<strong>Top Priority</strong> — the single most important action before S6. Act on it this week." data-es="<strong>Prioridad Principal</strong> — la acción más importante antes de S6. Actúe esta semana."><strong>Top Priority</strong> — the single most important action before S6. Act on it this week.</li>
+          <li data-en="<strong>Green result?</strong> Good — but verify it. Your facilitator will ask you two gate questions live." data-es="<strong>¿Resultado verde?</strong> Bien — pero verifíquelo. Su facilitador le hará dos preguntas de criterio en vivo."><strong>Green result?</strong> Good — but verify it. Your facilitator will ask you two gate questions live.</li>
+          <li data-en="<strong>Red result?</strong> Good. You found out now — not on presentation day. You have a week to fix it." data-es="<strong>¿Resultado rojo?</strong> Bien. Lo descubrió ahora — no el día de la presentación. Tiene una semana para corregirlo."><strong>Red result?</strong> Good. You found out now — not on presentation day. You have a week to fix it.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ai-status-bar">
+      <div class="asb-item"><div class="asb-rating ready" data-en="Ready ✓" data-es="Listo ✓">Ready ✓</div><div class="asb-label" data-en="S6 Ready" data-es="Listo para S6">S6 Ready</div></div>
+      <div class="asb-item"><div class="asb-rating caution" data-en="Needs Work ⚠" data-es="Necesita Trabajo ⚠">Needs Work ⚠</div><div class="asb-label" data-en="Gaps to close" data-es="Brechas a cerrar">Gaps to close</div></div>
+      <div class="asb-item"><div class="asb-rating notready" data-en="Not Ready ✗" data-es="No Listo ✗">Not Ready ✗</div><div class="asb-label" data-en="Significant rework needed" data-es="Se requiere retrabajo significativo">Significant rework needed</div></div>
+      <div class="asb-desc" data-en="API key required · Settings → gear icon → enter sk-ant-... key · stored on your device only" data-es="Clave API requerida · Configuración → ícono de engranaje → ingrese clave sk-ant-... · almacenada solo en su dispositivo">API key required · Settings → gear icon → enter sk-ant-... key · stored on your device only</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">12 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: S5 PREVIEW -->
+<div class="slide content-slide"
+  data-notes-en="Preview S5 concisely. S5 is the leadership session — the behaviors that make CI results stick. Connect back to D8: 'D8 is the CI expression of leadership accountability. S5 gives you the full framework.' No assignment after S5 — participants need that week to finalize presentations."
+  data-notes-es="Anticipe S5 de manera concisa. S5 es la sesión de liderazgo — los comportamientos que hacen que los resultados de MC se sostengan. Conecte con D8: 'El D8 es la expresión de MC de la rendición de cuentas del liderazgo. S5 les da el marco completo.' Sin tarea después de S5.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="Coming Up — S5: Leadership Fundamentals" data-es="Próximo — S5: Fundamentos de Liderazgo">Coming Up — S5: Leadership Fundamentals</div>
+    <div class="slide-intro" data-en="The behaviors that make CI results stick" data-es="Los comportamientos que hacen que los resultados de MC se sostengan">The behaviors that make CI results stick</div>
+    <div class="block-label" data-en="S5 covers three things" data-es="S5 cubre tres cosas">S5 covers three things</div>
+    <ul class="bullet-list">
+      <li data-en="<strong>The Four Criteria for a Clear Expectation</strong> — What, By When, By Whom, How Confirmed. Every expectation that doesn't meet all four cannot be fairly held accountable." data-es="<strong>Los Cuatro Criterios para una Expectativa Clara</strong> — Qué, Cuándo, Quién, Cómo se Confirma. Toda expectativa que no cumpla los cuatro no puede responsabilizarse de manera justa."><strong>The Four Criteria for a Clear Expectation</strong> — What, By When, By Whom, How Confirmed. Every expectation that doesn't meet all four cannot be fairly held accountable.</li>
+      <li data-en="<strong>Accountability in a Win-Win Environment</strong> — The structure of the accountability conversation. How to follow through without creating fear or compliance theater." data-es="<strong>Rendición de Cuentas en un Entorno Ganar-Ganar</strong> — La estructura de la conversación de rendición de cuentas. Cómo dar seguimiento sin crear miedo."><strong>Accountability in a Win-Win Environment</strong> — The structure of the accountability conversation. How to follow through without creating fear or compliance theater.</li>
+      <li data-en="<strong>The Operational Rhythm</strong> — Your personal accountability cadence: the daily, weekly, and monthly routines that ensure you're inspecting what you expect." data-es="<strong>El Ritmo Operacional</strong> — Su cadencia personal de rendición de cuentas: las rutinas diarias, semanales y mensuales que garantizan que usted inspeccione lo que espera."><strong>The Operational Rhythm</strong> — Your personal accountability cadence: the daily, weekly, and monthly routines that ensure you're inspecting what you expect.</li>
+    </ul>
+    <div style="margin-top:18px;background:#fff8f8;border-left:4px solid #ED1C24;padding:12px 16px;border-radius:4px;">
+      <span style="color:#ED1C24;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;" data-en="Note" data-es="Nota">Note</span>
+      <p style="color:#333;font-size:13px;margin-top:4px;" data-en="No between-session assignment after S5. Use that week to finalize your S6 presentation. Due 48 hours before S6." data-es="Sin tarea entre sesiones después de S5. Use esa semana para finalizar su presentación de S6. Vence 48 horas antes de S6.">No between-session assignment after S5. Use that week to finalize your S6 presentation. Due 48 hours before S6.</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">13 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: ASSIGNMENT -->
+<div class="slide close-slide"
+  data-notes-en="Read each assignment item clearly. Emphasize: 'This is the last time you have structured coaching on your project before you present it. If you have questions, now is the time.' Note the 48-hour submission requirement — late submissions don't receive written feedback before S6."
+  data-notes-es="Lea cada elemento de la tarea claramente. Enfatice: 'Esta es la última vez que tiene orientación estructurada sobre su proyecto antes de presentarlo. Si tiene preguntas, ahora es el momento.' Señale el requisito de entrega de 48 horas.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <h2 data-en="S4 Assignment" data-es="Tarea S4">S4 Assignment</h2>
+    <div class="close-sub" data-en="Build your complete project plan and prepare for S6" data-es="Construya su plan completo de proyecto y prepárese para S6">Build your complete project plan and prepare for S6</div>
+    <div class="assignment-box">
+      <div class="assign-label" data-en="Submit at least 48 hrs before S6" data-es="Enviar al menos 48 hrs antes de S6">Submit at least 48 hrs before S6</div>
+      <ul>
+        <li data-en="Save all tracker fields D1–D8. Fill any fields left blank during today's session." data-es="Guarde todos los campos del rastreador D1–D8. Complete los campos que quedaron en blanco hoy.">Save all tracker fields D1–D8. Fill any fields left blank during today's session.</li>
+        <li data-en="Update D6 status as validation progresses. Report honestly: in progress, confirmed, or not yet started — all are acceptable. No metric and no owner is not." data-es="Actualice el estado del D6 a medida que avance la validación. Reporte honestamente: en curso, confirmado o aún no iniciado — todos son aceptables. Sin métrica y sin responsable no lo es.">Update D6 and D7 status as actions complete. Report honestly — in progress is acceptable. No name, no date is not.</li>
+        <li data-en="Run the AI Review after completing all fields. Address every flagged discipline before building your presentation." data-es="Ejecute la Revisión IA después de completar todos los campos. Aborde cada disciplina marcada antes de construir su presentación.">Run the AI Review. Address every flagged discipline before building your presentation.</li>
+        <li data-en="Build your S6 presentation: one section per discipline, D1 through D8. For each: what is being done, who owns it, current status. 10-minute target." data-es="Construya su presentación S6: una sección por disciplina, D1 al D8. Para cada una: qué se está haciendo, quién es responsable, estado actual. Objetivo: 10 minutos.">Build S6 presentation: D1–D8 in sequence. What, who, status for each. 10-minute target.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">14 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" onclick="nextSlide()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: CLOSE -->
+<div class="slide title-slide"
+  data-notes-en="Close on momentum. 'Today you completed the 8D arc. Every one of you has the framework to solve a real problem permanently. S5 is the leadership layer that makes it stick. S6 is where you show the group what you built.' Confirm S5 date. Recording will be distributed within 48 hours."
+  data-notes-es="Cierre con momentum. 'Hoy completaron el arco 8D. Cada uno de ustedes tiene el marco para resolver un problema real de manera permanente. S5 es la capa de liderazgo que lo consolida. S6 es donde muestran al grupo lo que construyeron.' Confirme la fecha de S5.">
+  <div class="slide-header">
+    <img src="https://www.synergeticsww.com/wp-content/uploads/2021/08/Synergetics-Logo-Reversed-2048x380.png" alt="Synergetics" style="height:24px;width:auto;display:block;">
+    <div class="header-right">
+      <span class="session-badge" data-en="Session 4" data-es="Sesión 4">Session 4</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow" data-en="Session 4 Complete" data-es="Sesión 4 Completa">Session 4 Complete</div>
+    <h1 data-en="The 8D Arc Is Complete." data-es="El Arco 8D Está Completo.">The 8D Arc Is Complete.</h1>
+    <div class="title-divider"></div>
+    <div class="subtitle" data-en="Next: S5 — Leadership Fundamentals" data-es="Siguiente: S5 — Fundamentos de Liderazgo">Next: S5 — Leadership Fundamentals</div>
+    <div class="title-meta">
+      <div class="title-meta-item"><div class="label" data-en="Your project due" data-es="Proyecto vence">Your project due</div><div class="value" data-en="48 hrs before S6" data-es="48 hrs antes de S6">48 hrs before S6</div></div>
+      <div class="title-meta-item"><div class="label" data-en="Recording" data-es="Grabación">Recording</div><div class="value" data-en="Within 48 hrs" data-es="En 48 hrs">Within 48 hrs</div></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">15 / 15</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes (N)" data-es="Notas (N)">Notes (N)</button>
+      <div class="nav-btns">
+        <button class="nav-btn" onclick="prevSlide()">&#8592;</button>
+        <button class="nav-btn" disabled>&#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0;
+let notesVisible = false;
+let currentLang = 'en';
+let d7Count = 0;
+let d8Count = 0;
+let buildCount = 0;
+let gatePassCount = 0;
+let gateFailCount = 0;
+let gateRevealCount = 0;
+const d7Cards = ['d7c1','d7c2','d7c3','d7c4'];
+const d8Cards = ['d8q1','d8q2','d8q3'];
+const gateCards = ['gc1','gc2','gc3','gc4','gc5'];
+const buildSteps = ['bs1','bs2','bs3'];
+
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === lang.toUpperCase()));
+  applyLang();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const val = el.getAttribute('data-' + currentLang) || el.getAttribute('data-en');
+    if (val) el.innerHTML = val;
+  });
+  const d7p = document.getElementById('d7-progress');
+  if (d7p) { const t = d7p.getAttribute('data-' + currentLang + '-template') || d7p.getAttribute('data-en-template'); if (t) d7p.textContent = t.replace('X', d7Count); }
+  const d8p = document.getElementById('d8-progress');
+  if (d8p) { const t = d8p.getAttribute('data-' + currentLang + '-template') || d8p.getAttribute('data-en-template'); if (t) d8p.textContent = t.replace('X', d8Count); }
+  if (notesVisible) updateNotes();
+}
+
+function goToSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  slides[currentSlide].classList.add('active');
+  if (notesVisible) updateNotes();
+  applyLang();
+}
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+  if (e.key === 'n' || e.key === 'N') toggleNotes();
+});
+
+function toggleNotes() {
+  notesVisible = !notesVisible;
+  document.getElementById('notes-panel').classList.toggle('visible', notesVisible);
+  if (notesVisible) updateNotes();
+}
+function updateNotes() {
+  const s = slides[currentSlide];
+  const notes = s.getAttribute('data-notes-' + currentLang) || s.getAttribute('data-notes-en') || '';
+  document.getElementById('notes-heading').textContent = currentLang === 'es' ? 'Notas del Facilitador' : 'Facilitator Notes';
+  document.getElementById('notes-content').innerHTML = '<p>' + notes + '</p>';
+}
+
+/* GATE CHECK */
+function revealNextGate() {
+  if (gateRevealCount < gateCards.length) {
+    document.getElementById(gateCards[gateRevealCount]).classList.add('revealed');
+    gateRevealCount++;
+    if (gateRevealCount >= gateCards.length) {
+      const btn = document.getElementById('gate-reveal-btn');
+      btn.disabled = true;
+      btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Todos revelados' : 'All revealed';
+    }
+  }
+}
+function gateVote(id, verdict) {
+  const card = document.getElementById(id);
+  card.classList.remove('pass-gate','fail-gate');
+  card.classList.add(verdict === 'pass' ? 'pass-gate' : 'fail-gate');
+  document.getElementById(id + '-pass').style.display = verdict === 'pass' ? 'block' : 'none';
+  document.getElementById(id + '-fail').style.display = verdict === 'fail' ? 'block' : 'none';
+  card.querySelectorAll('.g-btn').forEach(b => b.classList.remove('pass','fail'));
+  card.querySelector('.g-btn:first-child').classList.toggle('pass', verdict === 'pass');
+  card.querySelector('.g-btn:last-child').classList.toggle('fail', verdict === 'fail');
+  updateGateSummary();
+}
+function updateGateSummary() {
+  let p = 0, f = 0;
+  gateCards.forEach(id => {
+    const c = document.getElementById(id);
+    if (c.classList.contains('pass-gate')) p++;
+    if (c.classList.contains('fail-gate')) f++;
+  });
+  const passEl = document.getElementById('gate-pass-count');
+  const failEl = document.getElementById('gate-fail-count');
+  if (passEl) passEl.innerHTML = p + ' <span data-en="passed" data-es="pasaron">' + (currentLang === 'es' ? 'pasaron' : 'passed') + '</span>';
+  if (failEl) failEl.innerHTML = f + ' <span data-en="gaps" data-es="brechas">' + (currentLang === 'es' ? 'brechas' : 'gaps') + '</span>';
+}
+function resetGates() {
+  gateRevealCount = 0; gatePassCount = 0; gateFailCount = 0;
+  gateCards.forEach(id => {
+    const c = document.getElementById(id);
+    c.classList.remove('revealed','pass-gate','fail-gate');
+    c.querySelectorAll('.g-btn').forEach(b => b.classList.remove('pass','fail'));
+    c.querySelector('.g-verdict').style.display = 'none';
+    const failV = document.getElementById(id + '-fail'); if(failV) failV.style.display = 'none';
+  });
+  const btn = document.getElementById('gate-reveal-btn');
+  btn.disabled = false;
+  btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Revelar siguiente criterio →' : 'Reveal next gate →';
+  const passEl = document.getElementById('gate-pass-count');
+  const failEl = document.getElementById('gate-fail-count');
+  if (passEl) passEl.innerHTML = '0 <span>' + (currentLang === 'es' ? 'pasaron' : 'passed') + '</span>';
+  if (failEl) failEl.innerHTML = '0 <span>' + (currentLang === 'es' ? 'brechas' : 'gaps') + '</span>';
+}
+
+/* D7 LIVE BUILD */
+function revealNextStep() {
+  if (buildCount < buildSteps.length) {
+    if (buildCount > 0) document.getElementById(buildSteps[buildCount-1]).classList.replace('active-step','done-step');
+    document.getElementById(buildSteps[buildCount]).classList.add('active-step');
+    buildCount++;
+    const status = document.getElementById('build-status');
+    if (status) status.textContent = (currentLang === 'es' ? buildCount + ' de 3 pasos' : buildCount + ' of 3 steps');
+    if (buildCount >= buildSteps.length) {
+      document.getElementById(buildSteps[buildCount-1]).classList.replace('active-step','done-step');
+      const btn = document.getElementById('build-reveal-btn');
+      btn.disabled = true;
+      btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Todos completados ✓' : 'All steps done ✓';
+    }
+  }
+}
+function resetBuild() {
+  buildCount = 0;
+  buildSteps.forEach(id => { document.getElementById(id).classList.remove('active-step','done-step'); });
+  const btn = document.getElementById('build-reveal-btn');
+  btn.disabled = false;
+  btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Activar siguiente paso →' : 'Activate next step →';
+  const status = document.getElementById('build-status');
+  if (status) status.textContent = currentLang === 'es' ? '0 de 3 pasos' : '0 of 3 steps';
+}
+
+/* D7 CARDS */
+function revealNextD7() {
+  if (d7Count < d7Cards.length) {
+    document.getElementById(d7Cards[d7Count]).classList.add('revealed');
+    if (d7Count > 0) document.getElementById(d7Cards[d7Count-1]).classList.remove('active-card');
+    document.getElementById(d7Cards[d7Count]).classList.add('active-card');
+    d7Count++;
+    const p = document.getElementById('d7-progress');
+    const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+    if (t) p.textContent = t.replace('X', d7Count);
+    if (d7Count >= d7Cards.length) {
+      document.getElementById(d7Cards[d7Count-1]).classList.remove('active-card');
+      const btn = document.getElementById('d7-reveal-btn');
+      btn.disabled = true;
+      btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Todos revelados' : 'All revealed';
+    }
+  }
+}
+function resetD7() {
+  d7Count = 0;
+  d7Cards.forEach(id => { const c = document.getElementById(id); c.classList.remove('revealed','active-card'); });
+  const btn = document.getElementById('d7-reveal-btn');
+  btn.disabled = false;
+  const span = btn.querySelector('[data-en]');
+  if (span) { span.setAttribute('data-en','Reveal next component →'); span.setAttribute('data-es','Revelar siguiente componente →'); span.textContent = currentLang === 'es' ? 'Revelar siguiente componente →' : 'Reveal next component →'; }
+  const p = document.getElementById('d7-progress');
+  const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+  if (t) p.textContent = t.replace('X', 0);
+}
+
+/* D8 CARDS */
+function revealNextD8() {
+  if (d8Count < d8Cards.length) {
+    document.getElementById(d8Cards[d8Count]).classList.add('revealed');
+    d8Count++;
+    const p = document.getElementById('d8-progress');
+    const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+    if (t) p.textContent = t.replace('X', d8Count);
+    if (d8Count >= d8Cards.length) {
+      const btn = document.getElementById('d8-reveal-btn');
+      btn.disabled = true;
+      btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Todas reveladas' : 'All revealed';
+    }
+  }
+}
+function resetD8() {
+  d8Count = 0;
+  d8Cards.forEach(id => document.getElementById(id).classList.remove('revealed'));
+  const btn = document.getElementById('d8-reveal-btn');
+  btn.disabled = false;
+  const span = btn.querySelector('[data-en]');
+  if (span) { span.setAttribute('data-en','Reveal next quality →'); span.setAttribute('data-es','Revelar siguiente cualidad →'); span.textContent = currentLang === 'es' ? 'Revelar siguiente cualidad →' : 'Reveal next quality →'; }
+  const p = document.getElementById('d8-progress');
+  const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+  if (t) p.textContent = t.replace('X', 0);
+}
+
+/* D1–D6 LIVE BUILD */
+let d16Count = 0;
+const d16Cards = ['dc1','dc2','dc3','dc4','dc5','dc6'];
+function revealNextD16() {
+  if (d16Count < d16Cards.length) {
+    if (d16Count > 0) {
+      document.getElementById(d16Cards[d16Count-1]).classList.remove('active-d');
+      document.getElementById(d16Cards[d16Count-1]).classList.add('done-d');
+    }
+    document.getElementById(d16Cards[d16Count]).classList.add('active-d');
+    d16Count++;
+    const p = document.getElementById('d16-progress');
+    const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+    if (t) p.textContent = t.replace('X', d16Count);
+    if (d16Count >= d16Cards.length) {
+      document.getElementById(d16Cards[d16Count-1]).classList.remove('active-d');
+      document.getElementById(d16Cards[d16Count-1]).classList.add('done-d');
+      const btn = document.getElementById('d16-reveal-btn');
+      btn.disabled = true;
+      btn.querySelector('[data-en]').textContent = currentLang === 'es' ? 'Todos completos ✓' : 'All disciplines done ✓';
+    }
+  }
+}
+function resetD16() {
+  d16Count = 0;
+  d16Cards.forEach(id => {
+    const c = document.getElementById(id);
+    c.classList.remove('active-d','done-d');
+  });
+  const btn = document.getElementById('d16-reveal-btn');
+  btn.disabled = false;
+  const span = btn.querySelector('[data-en]');
+  if (span) { span.setAttribute('data-en','Activate next discipline →'); span.setAttribute('data-es','Activar siguiente disciplina →'); span.textContent = currentLang === 'es' ? 'Activar siguiente disciplina →' : 'Activate next discipline →'; }
+  const p = document.getElementById('d16-progress');
+  const t = p.getAttribute('data-' + currentLang + '-template') || p.getAttribute('data-en-template');
+  if (t) p.textContent = t.replace('X', 0);
+}
+
+goToSlide(0);
+</script>
+</body>
+</html>
