@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1 — Foundations of 8D and Problem-Solving Culture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Open Sans', Arial, sans-serif; background: #07275D; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+.deck { width: 100vw; height: 100vh; position: relative; }
+.slide { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* CHROME */
+.slide-header { background: #07275D; padding: 16px 48px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.logo-text { color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.session-badge { background: #ED1C24; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
+.lang-toggle { display: flex; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
+.lang-btn { background: transparent; border: none; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; padding: 4px 10px; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; letter-spacing: 0.05em; transition: all 0.15s; }
+.lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
+.lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+
+.slide-footer { background: #07275D; padding: 10px 48px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.slide-counter { color: #a8c4e8; font-size: 12px; }
+.nav-btns { display: flex; gap: 8px; }
+.nav-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: 'Open Sans', Arial, sans-serif; }
+.nav-btn:hover { background: rgba(255,255,255,0.22); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.notes-toggle { background: rgba(237,28,36,0.25); border: 1px solid rgba(237,28,36,0.5); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; font-weight: 600; letter-spacing: 0.04em; }
+.notes-toggle:hover { background: rgba(237,28,36,0.4); }
+
+/* NOTES PANEL */
+.notes-panel { display: none; position: absolute; bottom: 52px; right: 48px; width: 340px; background: #122652; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 16px; z-index: 100; }
+.notes-panel.visible { display: block; }
+.notes-panel h4 { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+.notes-panel p, .notes-panel li { color: #c8d8eb; font-size: 12px; line-height: 1.6; }
+.notes-panel ul { padding-left: 14px; }
+.notes-panel li { margin-bottom: 4px; }
+
+/* SLIDE BODY */
+.slide-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+/* TITLE SLIDE */
+.title-slide .slide-body { background: #07275D; align-items: center; justify-content: center; text-align: center; padding: 40px 80px; }
+.title-slide .eyebrow { color: #ED1C24; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+.title-slide h1 { color: #fff; font-size: 40px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+.title-slide .subtitle { color: #a8c4e8; font-size: 17px; font-weight: 300; margin-bottom: 40px; }
+.title-meta { display: flex; gap: 32px; justify-content: center; }
+.title-meta-item { text-align: center; }
+.title-meta-item .label { color: #4B89D7; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.title-meta-item .value { color: #fff; font-size: 15px; font-weight: 600; }
+.title-divider { width: 60px; height: 3px; background: #ED1C24; margin: 0 auto 36px; }
+
+/* CONTENT */
+.content-slide .slide-body { background: #fff; padding: 28px 56px 20px; }
+.slide-title { color: #07275D; font-size: 26px; font-weight: 700; margin-bottom: 5px; border-left: 4px solid #ED1C24; padding-left: 16px; }
+.slide-intro { color: #555; font-size: 14px; margin-bottom: 22px; padding-left: 20px; }
+.block-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+.bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.bullet-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #1a1a1a; line-height: 1.5; }
+.bullet-list li::before { content: ''; width: 7px; height: 7px; background: #ED1C24; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.bullet-list li strong { color: #07275D; }
+
+/* QUIZ */
+.quiz-slide .slide-body { background: #fff; padding: 28px 56px 20px; }
+.quiz-question { background: #07275D; border-radius: 8px; padding: 24px 28px; margin-bottom: 22px; }
+.quiz-question p { color: #fff; font-size: 20px; font-weight: 600; line-height: 1.4; }
+.quiz-prompt { color: #a8c4e8; font-size: 13px; margin-top: 8px; font-style: italic; }
+.quiz-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.quiz-answer { border: 2px solid #e0e0db; border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: #333; font-family: 'Open Sans', Arial, sans-serif; background: #fff; text-align: left; }
+.quiz-answer:hover { border-color: #07275D; background: #eef3f9; }
+.quiz-answer.revealed-correct { border-color: #2a6b2a; background: #e8f5e8; color: #1a4a1a; font-weight: 600; }
+.quiz-answer.revealed-partial { border-color: #d97706; background: #fffbeb; color: #78350f; font-weight: 600; }
+.quiz-answer.revealed-wrong { border-color: #ccc; background: #f5f5f3; color: #888; }
+.quiz-explanation { display:none; margin-top:14px; background:#f0f4fa; border-left:4px solid #07275D; border-radius:6px; padding:13px 16px; }
+.quiz-explanation.visible { display:block; }
+.quiz-explanation .ex-heading { color:#07275D; font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:6px; }
+.quiz-explanation p { color:#333; font-size:13px; line-height:1.6; }
+.reveal-btn { display: block; width: 100%; margin-top: 16px; padding: 12px; background: #ED1C24; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; transition: background 0.15s; }
+.reveal-btn:hover { background: #c41520; }
+.reveal-btn:disabled { background: #ccc; cursor: default; }
+
+/* 8D ARC */
+.arc-slide .slide-body { background: #fff; padding: 22px 40px 16px; }
+.arc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.arc-card { border: 2px solid #e0e8f0; border-radius: 8px; padding: 12px 14px; opacity: 0.15; transition: opacity 0.4s, border-color 0.4s, background 0.4s; }
+.arc-card.visible { opacity: 1; border-color: #07275D; background: #f5f8fd; }
+.arc-card.highlight { border-color: #ED1C24; background: #fff8f8; }
+.arc-card .d-num { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+.arc-card .d-title { color: #07275D; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.arc-card .d-desc { color: #555; font-size: 11px; line-height: 1.4; }
+.arc-controls { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+.arc-btn { padding: 7px 18px; background: #07275D; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; transition: background 0.15s; }
+.arc-btn:hover { background: #0a3a8a; }
+.arc-btn:disabled { background: #ccc; cursor: default; }
+.arc-btn.secondary { background: #fff; color: #07275D; border: 1px solid #07275D; }
+.arc-btn.secondary:hover { background: #eef3f9; }
+.arc-progress { color: #888; font-size: 13px; margin-left: auto; }
+
+/* PROBLEM STATEMENT BUILDER */
+.psb-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.ps-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.ps-box { border-radius: 8px; padding: 14px 16px; }
+.ps-box.weak { background: #fff5f5; border: 2px solid #f09595; }
+.ps-box.strong { background: #f0f8f0; border: 2px solid #97c459; }
+.ps-box .ps-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 6px; }
+.ps-box.weak .ps-label { color: #A32D2D; }
+.ps-box.strong .ps-label { color: #3B6D11; }
+.ps-box p { font-size: 13px; line-height: 1.5; color: #333; }
+.ps-builder { background: #eef3f9; border-radius: 8px; padding: 16px 20px; }
+.ps-builder h4 { color: #07275D; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+.ps-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.ps-field label { display: block; font-size: 11px; font-weight: 700; color: #07275D; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+.ps-field input { width: 100%; padding: 7px 10px; border: 1px solid #c8d8eb; border-radius: 4px; font-size: 13px; font-family: 'Open Sans', Arial, sans-serif; background: #fff; color: #1a1a1a; }
+.ps-output { background: #fff; border: 2px solid #07275D; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #07275D; font-weight: 600; line-height: 1.6; min-height: 46px; font-style: italic; }
+
+/* POLISH BUTTON */
+.polish-btn { padding: 6px 14px; background: #07275D; color: #fff; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; letter-spacing: 0.04em; transition: background 0.15s, opacity 0.15s; white-space: nowrap; }
+.polish-btn:hover:not(:disabled) { background: #0a3a8a; }
+.polish-btn:disabled { background: #aaa; cursor: default; }
+.polish-btn.loading { opacity: 0.75; }
+.ps-polished-output { background: #fff; border: 2px solid #3B6D11; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #1a3a08; font-weight: 600; line-height: 1.6; min-height: 46px; font-style: italic; }
+
+/* FAILURE MODES */
+.failure-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.failure-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 8px; }
+.failure-card { border-radius: 8px; padding: 16px 18px; border-left: 4px solid #ED1C24; background: #fafafa; border-top: 1px solid #e8e8e4; border-right: 1px solid #e8e8e4; border-bottom: 1px solid #e8e8e4; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s; }
+.failure-card.visible { opacity: 1; transform: translateY(0); }
+.failure-card h4 { color: #07275D; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+.failure-card p { color: #555; font-size: 13px; line-height: 1.5; }
+.failure-reveal-btn { margin-top: 16px; padding: 9px 22px; background: #07275D; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Open Sans', Arial, sans-serif; transition: background 0.15s; }
+.failure-reveal-btn:hover { background: #0a3a8a; }
+.failure-reveal-btn:disabled { background: #ccc; cursor: default; }
+
+/* AGENDA */
+.agenda-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.agenda-items { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+.agenda-item { display: flex; align-items: center; gap: 16px; padding: 10px 14px; border-radius: 6px; background: #f5f8fd; border-left: 3px solid #07275D; }
+.agenda-item .time { color: #ED1C24; font-size: 12px; font-weight: 700; min-width: 68px; }
+.agenda-item .block-name { color: #07275D; font-size: 13px; font-weight: 700; width: 210px; flex-shrink: 0; }
+.agenda-item .block-desc { color: #666; font-size: 12px; }
+
+/* PROJECT SCOPING */
+.scoping-slide .slide-body { background: #fff; padding: 22px 48px 16px; }
+.criteria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+.criteria-card { background: #f5f8fd; border: 1px solid #c8d8eb; border-radius: 8px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.criteria-num { background: #07275D; color: #fff; font-size: 12px; font-weight: 700; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.criteria-card h4 { color: #07275D; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.criteria-card p { color: #555; font-size: 12px; line-height: 1.5; }
+
+/* DIVIDER */
+.divider-slide .slide-body { background: #122652; align-items: center; justify-content: center; text-align: center; padding: 60px; }
+.divider-slide .block-num { color: #ED1C24; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
+.divider-slide h2 { color: #fff; font-size: 34px; font-weight: 700; margin-bottom: 14px; line-height: 1.2; }
+.divider-slide .timer-badge { display: inline-block; background: rgba(75,137,215,0.2); border: 1px solid rgba(75,137,215,0.4); color: #a8c4e8; font-size: 13px; padding: 6px 18px; border-radius: 20px; }
+
+/* CLOSING */
+.closing-slide .slide-body { background: #07275D; align-items: center; justify-content: center; text-align: center; padding: 48px 60px; }
+.closing-slide h2 { color: #fff; font-size: 30px; font-weight: 700; margin-bottom: 18px; }
+.assignment-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 24px 32px; max-width: 600px; text-align: left; margin: 0 auto 20px; }
+.assignment-box .assign-label { color: #ED1C24; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.assignment-box p { color: #e0ecf8; font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+.assignment-box .example { color: #a8c4e8; font-size: 12px; line-height: 1.6; font-style: italic; border-left: 3px solid #ED1C24; padding-left: 12px; margin-top: 10px; }
+.next-session { color: #a8c4e8; font-size: 14px; margin-top: 6px; }
+.next-session strong { color: #fff; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+<div class="notes-panel" id="notes-panel"><h4 id="notes-heading">Facilitator Notes</h4><div id="notes-content"></div></div>
+
+<!-- ══════════════════════════════════════════════════════
+     SLIDE 1: TITLE
+══════════════════════════════════════════════════════ -->
+<div class="slide title-slide active"
+  data-notes-en="Open with conviction — not ceremony. The first 8 minutes set the tone for 6 weeks. Recording must be running before you open. Cold-call 2–3 people during the check-in."
+  data-notes-es="Abra con convicción, no con ceremonia. Los primeros 8 minutos establecen el tono para 6 semanas. La grabación debe estar activa antes de comenzar. Llame a 2–3 personas por nombre durante el check-in.">
+  <div class="slide-header">
+    <span class="logo-text">SYNERGETICS</span>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
+      <span class="session-badge" data-en="S1 — Week 1 of 6" data-es="S1 — Semana 1 de 6">S1 — Week 1 of 6</span>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow" data-en="MBC Companies CI Bootcamp" data-es="Bootcamp de Mejora Continua — MBC Companies">MBC Companies CI Bootcamp</div>
+    <h1 data-en="Foundations of 8D and<br>Problem-Solving Culture" data-es="Fundamentos del 8D y<br>Cultura de Resolución de Problemas">Foundations of 8D and<br>Problem-Solving Culture</h1>
+    <div class="title-divider"></div>
+    <div class="subtitle" data-en="Session 1 of 6 — Building the foundation before the floor work begins" data-es="Sesión 1 de 6 — Construyendo la base antes de implementar en el piso">Session 1 of 6 — Building the foundation before the floor work begins</div>
+    <div class="title-meta">
+      <div class="title-meta-item"><div class="label" data-en="Duration" data-es="Duración">Duration</div><div class="value" data-en="90 minutes" data-es="90 minutos">90 minutes</div></div>
+      <div class="title-meta-item"><div class="label" data-en="Format" data-es="Formato">Format</div><div class="value" data-en="Remote · Live" data-es="Remoto · En vivo">Remote · Live</div></div>
+      <div class="title-meta-item"><div class="label" data-en="Facilitators" data-es="Facilitadores">Facilitators</div><div class="value">Tice · Hughes · Triana</div></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="slide-counter">1 / 14</span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button>
+      <div class="nav-btns"><button class="nav-btn" onclick="prevSlide()" disabled>&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: AGENDA -->
+<div class="slide agenda-slide"
+  data-notes-en="Walk through agenda quickly — 60 seconds max. Emphasize: one real project per participant, developed across S1–S4, presented at S6. That project is the proof of concept."
+  data-notes-es="Repase la agenda rápidamente — máximo 60 segundos. Enfatice: un proyecto real por participante, desarrollado de S1 a S4, presentado en S6. Ese proyecto es la prueba del concepto.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Week 1 of 6" data-es="S1 — Semana 1 de 6">S1 — Week 1 of 6</span></div></div>
+  <div class="slide-body">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:10px;">
+      <div style="color:#07275D;font-size:26px;font-weight:700;" data-en="Today's session" data-es="Sesión de hoy">Today's session</div>
+    </div>
+    <div class="agenda-items">
+      <div class="agenda-item"><span class="time">0:00–0:08</span><span class="block-name" data-en="Welcome" data-es="Bienvenida">Welcome</span><span class="block-desc" data-en="Program overview, expectations, participant check-in" data-es="Descripción del programa, expectativas, presentación de participantes">Program overview, expectations, participant check-in</span></div>
+      <div class="agenda-item"><span class="time">0:08–0:23</span><span class="block-name" data-en="Why problem solving fails" data-es="Por qué falla la resolución de problemas">Why problem solving fails</span><span class="block-desc" data-en="The four failure modes in manufacturing problem-solving" data-es="Los cuatro modos de fallo en la resolución de problemas en manufactura">The four failure modes in manufacturing problem-solving</span></div>
+      <div class="agenda-item"><span class="time">0:23–0:38</span><span class="block-name" data-en="8D overview" data-es="Visión del 8D">8D overview</span><span class="block-desc" data-en="D1 through D8 as a connected system" data-es="D1 a D8 como un sistema conectado">D1 through D8 as a connected system</span></div>
+      <div class="agenda-item"><span class="time">0:38–0:48</span><span class="block-name" data-en="The Toolkit" data-es="El Kit de Herramientas">The Toolkit</span><span class="block-desc" data-en="Synergetics' Production Management Toolkit and what it means for MBC" data-es="El Kit de Gestión de Producción de Synergetics y lo que significa para MBC">Synergetics' Production Management Toolkit and what it means for MBC</span></div>
+      <div class="agenda-item"><span class="time">0:48–1:08</span><span class="block-name" data-en="Exercise" data-es="Ejercicio">Exercise</span><span class="block-desc" data-en="Problem scoping — identify your facility project" data-es="Alcance del problema — identificar su proyecto en la planta">Problem scoping — identify your facility project</span></div>
+      <div class="agenda-item"><span class="time">1:08–1:20</span><span class="block-name" data-en="Assignment" data-es="Tarea">Assignment</span><span class="block-desc" data-en="Problem statement format, strong vs. weak examples" data-es="Formato del enunciado del problema, ejemplos fuertes vs. débiles">Problem statement format, strong vs. weak examples</span></div>
+      <div class="agenda-item"><span class="time">1:20–1:30</span><span class="block-name" data-en="Wrap-up" data-es="Cierre">Wrap-up</span><span class="block-desc" data-en="S1 summary, S2 preview, close" data-es="Resumen de S1, vista previa de S2, cierre">S1 summary, S2 preview, close</span></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">2 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 3: INTRODUCTIONS -->
+<div class="slide intro-slide"
+  data-notes-en="Go around the room — ask each participant their name and their biggest operational headache. Type directly into the boxes. These become your talking points and examples throughout the session and in the Block 5 exercise."
+  data-notes-es="Pase por cada participante — pida su nombre y su mayor dolor de cabeza operativo. Escriba directamente en los cuadros.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 1" data-es="S1 — Bloque 1">S1 — Block 1</span></div></div>
+  <div class="slide-body" style="background:#fff;padding:18px 40px 10px;overflow:hidden;">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:12px;">
+      <div style="color:#07275D;font-size:24px;font-weight:700;">Introductions</div>
+      <div style="color:#555;font-size:13px;margin-top:3px;">Name &amp; biggest operational headache</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:0;border:1px solid #d0dcea;border-radius:8px;overflow:hidden;">
+      <div style="background:#07275D;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:8px 14px;border-right:1px solid rgba(255,255,255,0.2);">Name</div>
+      <div style="background:#07275D;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:8px 14px;">Biggest Operational Headache</div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;border-right:1px solid #d0dcea;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-bottom:1px solid #d0dcea;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#f5f8fd;padding:5px 8px;border-right:1px solid #d0dcea;"><input type="text" placeholder="Name" style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+      <div style="background:#fff;padding:5px 8px;"><input type="text" placeholder="Headache..." style="width:100%;border:none;background:transparent;font-family:'Open Sans',Arial,sans-serif;font-size:12px;color:#1a1a1a;outline:none;padding:2px 4px;"></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">3 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 4: BLOCK DIVIDER — WHY IT FAILS -->
+<div class="slide divider-slide"
+  data-notes-en="Before revealing the failure modes, ask the group: 'When a problem keeps coming back, what usually went wrong the first time?' Take 2–3 answers. Then advance to reveal the four modes."
+  data-notes-es="Antes de revelar los modos de fallo, pregunte al grupo: '¿Cuándo un problema sigue regresando, qué salió mal la primera vez?' Tome 2–3 respuestas. Luego avance para revelar los cuatro modos.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 2" data-es="S1 — Bloque 2">S1 — Block 2</span></div></div>
+  <div class="slide-body">
+    <div class="block-num" data-en="Block 2 — 15 minutes" data-es="Bloque 2 — 15 minutos">Block 2 — 15 minutes</div>
+    <h2 data-en="Why does problem-solving<br>fail in manufacturing?" data-es="¿Por qué falla la resolución<br>de problemas en manufactura?">Why does problem-solving<br>fail in manufacturing?</h2>
+    <div class="timer-badge" data-en="Ask the group first — then advance" data-es="Primero pregunte al grupo — luego avance">Ask the group first — then advance</div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">4 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 4: FAILURE MODES -->
+<div class="slide failure-slide"
+  data-notes-en="Reveal one failure mode at a time. After each, pause and ask: 'Anyone recognize this at their facility?' Connect each mode to the 8D discipline that addresses it before moving to the next."
+  data-notes-es="Revele un modo de fallo a la vez. Después de cada uno, pause y pregunte: '¿Alguien reconoce esto en su planta?' Conecte cada modo con la disciplina del 8D que lo aborda antes de continuar.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 2" data-es="S1 — Bloque 2">S1 — Block 2</span></div></div>
+  <div class="slide-body">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:10px;">
+      <div style="color:#07275D;font-size:24px;font-weight:700;" data-en="The four failure modes" data-es="Los cuatro modos de fallo">The four failure modes</div>
+      <div style="color:#555;font-size:13px;margin-top:3px;" data-en="Why problems keep coming back" data-es="Por qué los problemas siguen regresando">Why problems keep coming back</div>
+    </div>
+    <div class="failure-cards">
+      <div class="failure-card" id="fm1"><h4 data-en="Jumping to solutions" data-es="Saltar a soluciones">Jumping to solutions</h4><p data-en="The team skips problem definition and implements a fix immediately. The fix addresses the symptom — not the cause. The problem returns." data-es="El equipo omite la definición del problema e implementa una solución de inmediato. La solución aborda el síntoma, no la causa. El problema regresa.">The team skips problem definition and implements a fix immediately. The fix addresses the symptom — not the cause. The problem returns.</p></div>
+      <div class="failure-card" id="fm2"><h4 data-en="Fixing the symptom, not the cause" data-es="Corregir el síntoma, no la causa">Fixing the symptom, not the cause</h4><p data-en="Root cause analysis is shallow or skipped entirely. The visible problem disappears temporarily, but the underlying condition that created it remains." data-es="El análisis de causa raíz es superficial o se omite por completo. El problema visible desaparece temporalmente, pero la condición subyacente que lo generó permanece.">Root cause analysis is shallow or skipped entirely. The visible problem disappears temporarily, but the underlying condition that created it remains.</p></div>
+      <div class="failure-card" id="fm3"><h4 data-en="Wrong ownership model" data-es="Modelo de responsabilidad incorrecto">Wrong ownership model</h4><p data-en="One person owns the problem instead of a cross-functional team. Critical knowledge from maintenance, quality, or operations is missing from the solution." data-es="Una sola persona es dueña del problema en lugar de un equipo multifuncional. El conocimiento crítico de mantenimiento, calidad u operaciones está ausente de la solución.">One person owns the problem instead of a cross-functional team. Critical knowledge from maintenance, quality, or operations is missing from the solution.</p></div>
+      <div class="failure-card" id="fm4"><h4 data-en="No validation" data-es="Sin validación">No validation</h4><p data-en="The team assumes the fix worked. No metric. No timeframe. No confirmation. Six months later, the problem is back and no one knows why." data-es="El equipo asume que la solución funcionó. Sin métrica. Sin plazo. Sin confirmación. Seis meses después, el problema regresa y nadie sabe por qué.">The team assumes the fix worked. No metric. No timeframe. No confirmation. Six months later, the problem is back and no one knows why.</p></div>
+    </div>
+    <button class="failure-reveal-btn" id="reveal-failures-btn" onclick="revealNextFailure()" data-en="Reveal next →" data-es="Revelar siguiente →">Reveal next →</button>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">5 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 5: QUIZ -->
+<div class="slide quiz-slide"
+  data-notes-en="Let 2–3 people answer before revealing. Correct answer is D — No validation. They replaced the part but never confirmed the fix held. The problem returned 4 months later."
+  data-notes-es="Deje que 2–3 personas respondan antes de revelar. La respuesta correcta es D — Sin validación. Reemplazaron la pieza pero nunca confirmaron que la solución se mantuviera. El problema regresó 4 meses después.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Quick Check" data-es="S1 — Verificación Rápida">S1 — Quick Check</span></div></div>
+  <div class="slide-body">
+    <div class="quiz-question">
+      <p data-en="A packaging line was losing 45 minutes per shift to a recurring jam. Maintenance found a worn guide rail, replaced it, and the problem went away. Four months later — same jam, same location." data-es="Una línea de empaque perdía 45 minutos por turno debido a un atasco recurrente. Mantenimiento encontró un riel guía desgastado, lo reemplazó y el problema desapareció. Cuatro meses después — mismo atasco, misma ubicación.">A packaging line was losing 45 minutes per shift to a recurring jam. Maintenance found a worn guide rail, replaced it, and the problem went away. Four months later — same jam, same location.</p>
+      <div class="quiz-prompt" data-en="Which failure mode does this represent? Take a few answers from the group, then reveal." data-es="¿Qué modo de fallo representa esto? Tome algunas respuestas del grupo, luego revele.">Which failure mode does this represent? Take a few answers from the group, then reveal.</div>
+    </div>
+    <div class="quiz-answers" id="quiz1-answers">
+      <button class="quiz-answer" data-correct="false" onclick="selectAnswer(this,'quiz1')" data-en="A — Jumping to solutions before defining the problem" data-es="A — Saltar a soluciones antes de definir el problema">A — Jumping to solutions before defining the problem</button>
+      <button class="quiz-answer" data-correct="false" onclick="selectAnswer(this,'quiz1')" data-en="B — Wrong ownership model — no cross-functional team" data-es="B — Modelo de responsabilidad incorrecto — sin equipo multifuncional">B — Wrong ownership model — no cross-functional team</button>
+      <button class="quiz-answer" data-correct="partial" onclick="selectAnswer(this,'quiz1')" data-en="C — Fixing the symptom instead of the root cause" data-es="C — Corregir el síntoma en lugar de la causa raíz">C — Fixing the symptom instead of the root cause</button>
+      <button class="quiz-answer" data-correct="true" onclick="selectAnswer(this,'quiz1')" data-en="D — No validation that the fix actually worked" data-es="D — Sin validación de que la solución realmente funcionó">D — No validation that the fix actually worked</button>
+    </div>
+    <button class="reveal-btn" id="quiz1-reveal" onclick="revealQuiz('quiz1')" data-en="Reveal answer" data-es="Revelar respuesta">Reveal answer</button>
+    <div class="quiz-explanation" id="quiz1-explanation">
+      <div class="ex-heading">Why C and D — both matter</div>
+      <p><strong>C is correct but incomplete.</strong> Maintenance fixed the worn guide rail — the visible symptom — without asking why the rail was wearing in the first place. The root cause was never identified, so the same failure mode re-emerged four months later. That is a D4 failure.<br><br><strong>D is also true.</strong> Even if they had found the right root cause, they never validated that the fix held. No confirmation step, no monitoring, no proof. That is a D6 failure.<br><br>This scenario skipped two disciplines in the arc — and that is exactly what 8D is designed to prevent. C without D is an incomplete fix. D without C is validating the wrong thing.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">6 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+
+<!-- SLIDE 7: INTERMISSION -->
+<div class="slide divider-slide"
+  data-notes-en="Give participants a real break — 5 to 10 minutes. State the exact return time. Mute and turn off camera. Use the break to review the Introductions list and pick 2-3 headaches to reference in the 8D arc. Reconvene with: We covered why problem-solving fails. Now we walk the system designed to prevent it."
+  data-notes-es="De a los participantes un descanso real — 5 a 10 minutos. Indique la hora exacta de regreso. Silencio y camara apagada.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Break" data-es="S1 — Descanso">S1 — Break</span></div></div>
+  <div class="slide-body" style="background:#0a1f4e;">
+    <div style="text-align:center;">
+      <div style="color:#ED1C24;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:18px;" data-en="5 to 10 minute break" data-es="Descanso de 5 a 10 minutos">5 to 10 minute break</div>
+      <h2 style="color:#fff;font-size:38px;font-weight:700;line-height:1.2;margin-bottom:16px;" data-en="Intermission" data-es="Intermedio">Intermission</h2>
+      <div style="width:60px;height:3px;background:#ED1C24;margin:0 auto 24px;"></div>
+      <div style="display:inline-flex;gap:32px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:20px 36px;margin-bottom:24px;">
+        <div style="text-align:center;">
+          <div style="color:#4B89D7;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;" data-en="We just covered" data-es="Acabamos de cubrir">We just covered</div>
+          <div style="color:#fff;font-size:14px;font-weight:600;" data-en="Why problem-solving fails" data-es="Por que falla la resolucion de problemas">Why problem-solving fails</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.15);"></div>
+        <div style="text-align:center;">
+          <div style="color:#4B89D7;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;" data-en="Coming up next" data-es="A continuacion">Coming up next</div>
+          <div style="color:#fff;font-size:14px;font-weight:600;" data-en="The 8D arc — the system that prevents it" data-es="El arco 8D — el sistema que lo previene">The 8D arc — the system that prevents it</div>
+        </div>
+      </div>
+      <div style="color:#a8c4e8;font-size:14px;font-weight:300;" data-en="We'll resume at [time] — please be back on time." data-es="Reanudaremos a las [hora] — por favor regresen a tiempo.">We'll resume at [time] — please be back on time.</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">7 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 8: DIVIDER — 8D ARC -->
+<div class="slide divider-slide"
+  data-notes-en="Key framing: '8D is not eight separate steps you complete in sequence. It is one connected system. Skipping a discipline doesn't just miss that step — it undermines everything that follows.'"
+  data-notes-es="Encuadre clave: 'El 8D no son ocho pasos separados que se completan en secuencia. Es un sistema conectado. Omitir una disciplina no solo pierde ese paso — socava todo lo que sigue.'">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 3" data-es="S1 — Bloque 3">S1 — Block 3</span></div></div>
+  <div class="slide-body">
+    <div class="block-num" data-en="Block 3 — 15 minutes" data-es="Bloque 3 — 15 minutos">Block 3 — 15 minutes</div>
+    <h2 data-en="The 8D methodology:<br>one connected arc" data-es="La metodología 8D:<br>un arco conectado">The 8D methodology:<br>one connected arc</h2>
+    <div class="timer-badge" data-en="We build this together — advance to reveal each discipline" data-es="Lo construimos juntos — avance para revelar cada disciplina">We build this together — advance to reveal each discipline</div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">8 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 7: 8D ARC BUILDER -->
+<div class="slide arc-slide"
+  data-notes-en="Click 'Add next discipline' to reveal D1–D8 one at a time. For each: name it, one sentence on what it does, connect to the failure mode it addresses. D3 and D4 get the most questions — slow down there. D8 always gets pushback — address it directly."
+  data-notes-es="Haga clic en 'Agregar siguiente disciplina' para revelar D1–D8 una a la vez. Para cada una: nómbrela, una oración sobre lo que hace, conéctela con el modo de fallo que aborda. D3 y D4 generan más preguntas — disminuya el ritmo allí. D8 siempre genera resistencia — abórdelo directamente.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 3" data-es="S1 — Bloque 3">S1 — Block 3</span></div></div>
+  <div class="slide-body">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:6px;">
+      <div style="color:#07275D;font-size:22px;font-weight:700;" data-en="Building the 8D arc" data-es="Construyendo el arco 8D">Building the 8D arc</div>
+      <div style="color:#555;font-size:12px;margin-top:2px;" data-en="Each discipline feeds the next — skip one, and the chain breaks" data-es="Cada disciplina alimenta la siguiente — omita una y la cadena se rompe">Each discipline feeds the next — skip one, and the chain breaks</div>
+    </div>
+    <div class="arc-grid" id="arc-grid">
+      <div class="arc-card" id="arc-d1"><div class="d-num">D1</div><div class="d-title" data-en="Team Formation" data-es="Formación del Equipo">Team Formation</div><div class="d-desc" data-en="Assemble the right cross-functional team. The right people catch what one person misses." data-es="Forme el equipo multifuncional correcto. Las personas correctas detectan lo que una sola persona pasa por alto.">Assemble the right cross-functional team. The right people catch what one person misses.</div></div>
+      <div class="arc-card" id="arc-d2"><div class="d-num">D2</div><div class="d-title" data-en="Problem Description" data-es="Descripción del Problema">Problem Description</div><div class="d-desc" data-en="Define the problem precisely using Is/Is Not analysis. You cannot solve what you haven't described." data-es="Defina el problema con precisión usando el análisis Es/No Es. No puede resolver lo que no ha descrito.">Define the problem precisely using Is/Is Not analysis. You cannot solve what you haven't described.</div></div>
+      <div class="arc-card" id="arc-d3"><div class="d-num">D3</div><div class="d-title" data-en="Containment Actions" data-es="Acciones de Contención">Containment Actions</div><div class="d-desc" data-en="Stop the bleeding immediately. Containment is temporary and intentional — not a workaround you forget." data-es="Detenga el daño de inmediato. La contención es temporal e intencional — no es una solución provisional que se olvida.">Stop the bleeding immediately. Containment is temporary and intentional — not a workaround you forget.</div></div>
+      <div class="arc-card" id="arc-d4"><div class="d-num">D4</div><div class="d-title" data-en="Root Cause Analysis" data-es="Análisis de Causa Raíz">Root Cause Analysis</div><div class="d-desc" data-en="Use 5 Whys and Fishbone to find verified root cause — not the most probable guess." data-es="Use los 5 Por Qués y el Diagrama de Ishikawa para encontrar la causa raíz verificada — no la suposición más probable.">Use 5 Whys and Fishbone to find verified root cause — not the most probable guess.</div></div>
+      <div class="arc-card" id="arc-d5"><div class="d-num">D5</div><div class="d-title" data-en="Corrective Actions" data-es="Acciones Correctivas">Corrective Actions</div><div class="d-desc" data-en="Design the fix for the root cause. Not the symptom — the cause." data-es="Diseñe la solución para la causa raíz. No para el síntoma — para la causa.">Design the fix for the root cause. Not the symptom — the cause.</div></div>
+      <div class="arc-card" id="arc-d6"><div class="d-num">D6</div><div class="d-title" data-en="Validate the Fix" data-es="Validar la Solución">Validate the Fix</div><div class="d-desc" data-en="Prove the corrective action worked — with data, over time. Not assumed. Proved." data-es="Demuestre que la acción correctiva funcionó — con datos, a lo largo del tiempo. No asumido. Demostrado.">Prove the corrective action worked — with data, over time. Not assumed. Proved.</div></div>
+      <div class="arc-card" id="arc-d7"><div class="d-num">D7</div><div class="d-title" data-en="Prevent Recurrence" data-es="Prevenir Recurrencia">Prevent Recurrence</div><div class="d-desc" data-en="Update SOPs, work instructions, and training so the problem cannot come back. Most teams quit here." data-es="Actualice los POE, instrucciones de trabajo y capacitación para que el problema no pueda regresar. La mayoría de los equipos se detienen aquí.">Update SOPs, work instructions, and training so the problem cannot come back. Most teams quit here.</div></div>
+      <div class="arc-card" id="arc-d8"><div class="d-num">D8</div><div class="d-title" data-en="Recognize the Team" data-es="Reconocer al Equipo">Recognize the Team</div><div class="d-desc" data-en="Close the loop. Recognition signals what the organization values and sustains CI culture." data-es="Cierre el ciclo. El reconocimiento señala lo que la organización valora y sostiene la cultura de MC.">Close the loop. Recognition signals what the organization values and sustains CI culture.</div></div>
+    </div>
+    <div class="arc-controls">
+      <button class="arc-btn" id="arc-add-btn" onclick="addNextDiscipline()" data-en="Add next discipline →" data-es="Agregar siguiente disciplina →">Add next discipline →</button>
+      <button class="arc-btn secondary" onclick="resetArc()" data-en="Reset" data-es="Reiniciar">Reset</button>
+      <span class="arc-progress" id="arc-progress" data-en-template="X of 8 disciplines" data-es-template="X de 8 disciplinas">0 of 8 disciplines</span>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">9 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 8: TOOLKIT -->
+<div class="slide content-slide"
+  data-notes-en="Keep this brief — 10 minutes. Don't go deep on any individual tool. Message: 'Everything in S1–S5 is the management foundation that makes the floor work faster and stick longer.'"
+  data-notes-es="Mantenga esto breve — 10 minutos. No profundice en ninguna herramienta individual. Mensaje: 'Todo en S1–S5 es la base de gestión que hace que el trabajo en el piso sea más rápido y duradero.'">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 4" data-es="S1 — Bloque 4">S1 — Block 4</span></div></div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="The Production Management Toolkit" data-es="El Kit de Gestión de Producción">The Production Management Toolkit</div>
+    <div class="slide-intro" data-en="What MBC gets — and how the bootcamp fits in" data-es="Lo que MBC obtiene — y cómo encaja el bootcamp">What MBC gets — and how the bootcamp fits in</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="block-label" data-en="Phase 1 — what we build in this bootcamp" data-es="Fase 1 — lo que construimos en este bootcamp">Phase 1 — what we build in this bootcamp</div>
+        <ul class="bullet-list">
+          <li><strong data-en="8D methodology" data-es="Metodología 8D">8D methodology</strong> — <span data-en="the problem-solving system" data-es="el sistema de resolución de problemas">the problem-solving system</span></li>
+          <li><strong data-en="5 Whys and Fishbone" data-es="5 Por Qués e Ishikawa">5 Whys and Fishbone</strong> — <span data-en="root cause tools" data-es="herramientas de causa raíz">root cause tools</span></li>
+          <li><strong data-en="Is/Is Not analysis" data-es="Análisis Es/No Es">Is/Is Not analysis</strong> — <span data-en="precision problem definition" data-es="definición precisa del problema">precision problem definition</span></li>
+          <li><strong data-en="Validation planning" data-es="Planificación de validación">Validation planning</strong> — <span data-en="proving fixes work" data-es="demostrar que las soluciones funcionan">proving fixes work</span></li>
+          <li><strong data-en="Four criteria for a clear expectation" data-es="Cuatro criterios para una expectativa clara">Four criteria for a clear expectation</strong></li>
+          <li><strong data-en="Operational Rhythm" data-es="Ritmo Operacional">Operational Rhythm</strong> — <span data-en="accountability cadence" data-es="cadencia de responsabilidad">accountability cadence</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="block-label" data-en="Phases 2–4 — what goes on the floor" data-es="Fases 2–4 — lo que va al piso">Phases 2–4 — what goes on the floor</div>
+        <ul class="bullet-list">
+          <li><strong data-en="Process Monitoring and T-Max" data-es="Monitoreo de Procesos y T-Max">Process Monitoring and T-Max</strong></li>
+          <li><strong data-en="Daily Drumbeat and Tier Meetings" data-es="Ritmo Diario y Reuniones por Niveles">Daily Drumbeat and Tier Meetings</strong></li>
+          <li><strong data-en="Playbooks and Standard Work" data-es="Manuales de Operación y Trabajo Estándar">Playbooks and Standard Work</strong></li>
+          <li><strong data-en="Loss Point Analysis and Yield Recovery" data-es="Análisis de Puntos de Pérdida y Recuperación de Rendimiento">Loss Point Analysis and Yield Recovery</strong></li>
+          <li><strong data-en="5S, SMED, Line Balancing" data-es="5S, SMED, Balanceo de Línea">5S, SMED, Line Balancing</strong></li>
+          <li><strong data-en="Skills Flexibility Matrix" data-es="Matriz de Flexibilidad de Habilidades">Skills Flexibility Matrix</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;background:#eef3f9;border-radius:8px;padding:12px 16px;border-left:4px solid #07275D;">
+      <p style="color:#07275D;font-size:13px;font-weight:600;" data-en="The faster MBC's managers are fluent in the shared language, the faster the floor work moves. That's why we build this foundation first." data-es="Cuanto más rápido dominen los gerentes de MBC el lenguaje compartido, más rápido avanzará el trabajo en el piso. Por eso construimos esta base primero.">The faster MBC's managers are fluent in the shared language, the faster the floor work moves. That's why we build this foundation first.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">10 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 9: PROJECT SCOPING -->
+<div class="slide scoping-slide"
+  data-notes-en="Give participants 8–10 minutes to work individually on the checklist in their workbook. Then ask 2–3 volunteers to share. Push back on anything vague. 'We have quality issues' is not a project."
+  data-notes-es="Dé a los participantes 8–10 minutos para trabajar individualmente en la lista de verificación en su cuaderno. Luego pida a 2–3 voluntarios que compartan. Rechace cualquier respuesta vaga. 'Tenemos problemas de calidad' no es un proyecto.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 5 Exercise" data-es="S1 — Ejercicio Bloque 5">S1 — Block 5 Exercise</span></div></div>
+  <div class="slide-body">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:8px;">
+      <div style="color:#07275D;font-size:24px;font-weight:700;" data-en="Identify your facility project" data-es="Identifique su proyecto en la planta">Identify your facility project</div>
+      <div style="color:#555;font-size:13px;margin-top:3px;" data-en="Use the problem-scoping checklist in your workbook — 8 minutes, then we share" data-es="Use la lista de verificación en su cuaderno — 8 minutos, luego compartimos">Use the problem-scoping checklist in your workbook — 8 minutes, then we share</div>
+    </div>
+    <div class="criteria-grid">
+      <div class="criteria-card"><div class="criteria-num">1</div><div><h4 data-en="Real and current" data-es="Real y actual">Real and current</h4><p data-en="An operational problem that exists right now at your facility. Not hypothetical. Not already solved." data-es="Un problema operacional que existe ahora mismo en su planta. No hipotético. No ya resuelto.">An operational problem that exists right now at your facility. Not hypothetical. Not already solved.</p></div></div>
+      <div class="criteria-card"><div class="criteria-num">2</div><div><h4 data-en="Measurable" data-es="Medible">Measurable</h4><p data-en="There is data or observable evidence — frequency, duration, cost, defect count, or downtime minutes you can track." data-es="Hay datos o evidencia observable — frecuencia, duración, costo, conteo de defectos o minutos de tiempo muerto que puede rastrear.">There is data or observable evidence — frequency, duration, cost, defect count, or downtime minutes you can track.</p></div></div>
+      <div class="criteria-card"><div class="criteria-num">3</div><div><h4 data-en="Within your influence" data-es="Dentro de su influencia">Within your influence</h4><p data-en="You have the authority or access to work on this problem at your facility level — not a corporate initiative." data-es="Tiene la autoridad o acceso para trabajar en este problema a nivel de su planta — no una iniciativa corporativa.">You have the authority or access to work on this problem at your facility level — not a corporate initiative.</p></div></div>
+      <div class="criteria-card"><div class="criteria-num">4</div><div><h4 data-en="Meaningful" data-es="Significativo">Meaningful</h4><p data-en="If solved permanently, it would matter — to production, quality, safety, or cost. Not a pet project. A real headache." data-es="Si se resuelve de forma permanente, importaría — para producción, calidad, seguridad o costo. No un proyecto favorito. Un verdadero dolor de cabeza.">If solved permanently, it would matter — to production, quality, safety, or cost. Not a pet project. A real headache.</p></div></div>
+    </div>
+    <div style="margin-top:12px;background:#fff8f0;border:1px solid #f5c4a0;border-radius:6px;padding:10px 14px;">
+      <p style="color:#854F0B;font-size:12px;font-weight:600;" data-en="Common pushback: 'We already know the fix.' Response: If it's already fixed and stayed fixed, it's not a project. If it keeps coming back — that's your project." data-es="Resistencia común: 'Ya sabemos la solución.' Respuesta: Si ya está resuelto y se mantiene resuelto, no es un proyecto. Si sigue regresando — ese es su proyecto.">Common pushback: 'We already know the fix.' Response: If it's already fixed and stayed fixed, it's not a project. If it keeps coming back — that's your project.</p>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">11 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 10: PROBLEM STATEMENT BUILDER -->
+<div class="slide psb-slide"
+  data-notes-en="Type into the live builder as you walk through the example. Fill each field and watch the statement build. Contrast the finished strong statement with the weak example. Goal: participants see exactly what their S1 assignment needs to look like."
+  data-notes-es="Escriba en el constructor en vivo mientras recorre el ejemplo. Complete cada campo y observe cómo se construye el enunciado. Contraste el enunciado fuerte terminado con el ejemplo débil. Meta: los participantes ven exactamente cómo debe ser su tarea S1.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Block 6" data-es="S1 — Bloque 6">S1 — Block 6</span></div></div>
+  <div class="slide-body">
+    <div style="border-left:4px solid #ED1C24;padding-left:16px;margin-bottom:10px;">
+      <div style="color:#07275D;font-size:22px;font-weight:700;" data-en="The problem statement" data-es="El enunciado del problema">The problem statement</div>
+      <div style="color:#555;font-size:12px;margin-top:2px;" data-en="Your S1 assignment — due before Session 2" data-es="Su tarea S1 — entregable antes de la Sesión 2">Your S1 assignment — due before Session 2</div>
+    </div>
+    <div class="ps-compare">
+      <div class="ps-box weak"><div class="ps-label" data-en="Weak — not a problem statement" data-es="Débil — no es un enunciado del problema">Weak — not a problem statement</div><p data-en='"We have downtime on Line 3."' data-es='"Tenemos tiempo muerto en la Línea 3."'>"We have downtime on Line 3."</p></div>
+      <div class="ps-box strong"><div class="ps-label" data-en="Strong — this is a problem statement" data-es="Fuerte — esto es un enunciado del problema">Strong — this is a problem statement</div><p data-en='"Line 3 at the Lebanon facility experiences unplanned downtime averaging 45 min/shift, 3–4 times per week, primarily during changeover. Estimated impact: 6 hours lost production per week."' data-es='"La Línea 3 en la planta de Lebanon experimenta tiempo muerto no planificado promediando 45 min/turno, 3–4 veces por semana, principalmente durante el cambio de formato. Impacto estimado: 6 horas de producción perdida por semana."'>"Line 3 at the Lebanon facility experiences unplanned downtime averaging 45 min/shift, 3–4 times per week, primarily during changeover. Estimated impact: 6 hours lost production per week."</p></div>
+    </div>
+    <div class="ps-builder">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <h4 data-en="Build it live — type to demonstrate the format" data-es="Constrúyalo en vivo — escriba para demostrar el formato" style="margin-bottom:0;">Build it live — type to demonstrate the format</h4>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;" data-en="API Key" data-es="Clave API">API Key</label>
+          <input type="password" id="ps-api-key" placeholder="sk-ant-..." style="width:180px;padding:4px 8px;border:1px solid #c8d8eb;border-radius:4px;font-size:12px;font-family:'Open Sans',Arial,sans-serif;color:#333;">
+        </div>
+      </div>
+      <div class="ps-fields">
+        <div class="ps-field"><label data-en="Facility / Line" data-es="Planta / Línea">Facility / Line</label><input type="text" id="ps-facility" data-placeholder-en="e.g. Lebanon, Line 3" data-placeholder-es="p.ej. Lebanon, Línea 3" placeholder="e.g. Lebanon, Line 3" oninput="updatePS()"></div>
+        <div class="ps-field"><label data-en="The problem" data-es="El problema">The problem</label><input type="text" id="ps-problem" data-placeholder-en="e.g. unplanned downtime during changeover" data-placeholder-es="p.ej. tiempo muerto no planificado durante cambio de formato" placeholder="e.g. unplanned downtime during changeover" oninput="updatePS()"></div>
+        <div class="ps-field"><label data-en="Frequency" data-es="Frecuencia">Frequency</label><input type="text" id="ps-frequency" data-placeholder-en="e.g. 3–4 times per week" data-placeholder-es="p.ej. 3–4 veces por semana" placeholder="e.g. 3–4 times per week" oninput="updatePS()"></div>
+        <div class="ps-field"><label data-en="Measurable impact" data-es="Impacto medible">Measurable impact</label><input type="text" id="ps-impact" data-placeholder-en="e.g. ~6 hrs lost production/week" data-placeholder-es="p.ej. ~6 hrs producción perdida/semana" placeholder="e.g. ~6 hrs lost production/week" oninput="updatePS()"></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-top:0;">
+        <div style="flex:1;">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;" data-en="Raw assembly" data-es="Ensamble en bruto">Raw assembly</div>
+          <div class="ps-output" id="ps-output" data-empty-en="Start typing above..." data-empty-es="Comience a escribir arriba...">Start typing above...</div>
+        </div>
+        <div style="padding-top:18px;">
+          <button class="polish-btn" id="ps-polish-btn" onclick="polishStatement()" data-en="✦ Polish with AI →" data-es="✦ Pulir con IA →">✦ Polish with AI →</button>
+          <button onclick="resetForm()" style="margin-top:8px;padding:6px 14px;background:#fff;color:#07275D;border:1px solid #07275D;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Open Sans',Arial,sans-serif;letter-spacing:0.04em;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#eef3f9'" onmouseout="this.style.background='#fff'" data-en="↺ Reset" data-es="↺ Limpiar">↺ Reset</button>
+        </div>
+        <div style="flex:1;" id="ps-polished-wrap">
+          <div style="font-size:10px;font-weight:700;color:#3B6D11;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;display:flex;align-items:center;gap:6px;">
+            <span data-en="✦ Polished statement" data-es="✦ Enunciado pulido">✦ Polished statement</span>
+            <span id="ps-grade-badge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:0.06em;text-transform:uppercase;"></span>
+            <button onclick="clearPolished()" style="background:none;border:none;color:#bbb;font-size:10px;cursor:pointer;padding:0;font-family:'Open Sans',Arial,sans-serif;font-weight:600;margin-left:auto;" data-en="(clear)" data-es="(borrar)">(clear)</button>
+          </div>
+          <div class="ps-polished-output" id="ps-polished-output" data-empty-en="Click ✦ Polish with AI to rewrite cleanly..." data-empty-es="Haga clic en ✦ Pulir con IA para reescribir...">Click ✦ Polish with AI to rewrite cleanly...</div>
+        </div>
+      </div>
+      <div id="ps-feedback-wrap" style="display:none;margin-top:10px;background:#f8f9fb;border:1px solid #dce6f0;border-radius:6px;padding:10px 14px;">
+        <div style="font-size:10px;font-weight:700;color:#07275D;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">Facilitator Feedback</div>
+        <div id="ps-feedback-text" style="font-size:12px;color:#333;line-height:1.6;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">12 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 11: S2 PREVIEW -->
+<div class="slide content-slide"
+  data-notes-en="Keep to 5 minutes. Create forward momentum. Confirm S2 date and time. Confirm recording will be distributed within 48 hours."
+  data-notes-es="Mantenga a 5 minutos. Cree impulso hacia adelante. Confirme fecha y hora de S2. Confirme que la grabación se distribuirá en 48 horas.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Wrap-Up" data-es="S1 — Cierre">S1 — Wrap-Up</span></div></div>
+  <div class="slide-body">
+    <div class="slide-title" data-en="What we built today — and what's next" data-es="Lo que construimos hoy — y lo que sigue">What we built today — and what's next</div>
+    <div class="slide-intro" data-en="S1 summary and S2 preview" data-es="Resumen de S1 y vista previa de S2">S1 summary and S2 preview</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div class="block-label" data-en="S1 — what you now have" data-es="S1 — lo que ahora tiene">S1 — what you now have</div>
+        <ul class="bullet-list">
+          <li><strong data-en="Why problem-solving fails" data-es="Por qué falla la resolución de problemas">Why problem-solving fails</strong> — <span data-en="the four failure modes" data-es="los cuatro modos de fallo">the four failure modes</span></li>
+          <li><strong data-en="The 8D arc" data-es="El arco 8D">The 8D arc</strong> — <span data-en="D1 through D8 as a connected system" data-es="D1 a D8 como sistema conectado">D1 through D8 as a connected system</span></li>
+          <li><strong data-en="Production Management Toolkit" data-es="Kit de Gestión de Producción">Production Management Toolkit</strong> — <span data-en="how the bootcamp fits" data-es="cómo encaja el bootcamp">how the bootcamp fits</span></li>
+          <li><strong data-en="A candidate facility project" data-es="Un proyecto candidato en la planta">A candidate facility project</strong> — <span data-en="scoped and ready for the assignment" data-es="definido y listo para la tarea">scoped and ready for the assignment</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="block-label" data-en="S2 — next week" data-es="S2 — próxima semana">S2 — next week</div>
+        <ul class="bullet-list">
+          <li><strong>D1</strong> — <span data-en="Team Formation: who belongs on the team and why" data-es="Formación del Equipo: quién pertenece al equipo y por qué">Team Formation: who belongs on the team and why</span></li>
+          <li><strong>D2</strong> — <span data-en="Problem Description: Is/Is Not analysis" data-es="Descripción del Problema: análisis Es/No Es">Problem Description: Is/Is Not analysis</span></li>
+          <li><strong>D3</strong> — <span data-en="Containment: what it is and what it isn't" data-es="Contención: qué es y qué no es">Containment: what it is and what it isn't</span></li>
+          <li><strong>D4</strong> — <span data-en="Root Cause Analysis: live 5 Whys drill and Fishbone" data-es="Análisis de Causa Raíz: ejercicio de 5 Por Qués y Diagrama de Ishikawa">Root Cause Analysis: live 5 Whys drill and Fishbone</span></li>
+        </ul>
+        <div style="margin-top:12px;background:#eef3f9;border-radius:6px;padding:8px 12px;border-left:3px solid #ED1C24;">
+          <p style="color:#07275D;font-size:12px;font-weight:600;" data-en="Before S2: Submit your one-paragraph problem statement. Due [date TBD]." data-es="Antes de S2: Envíe su enunciado del problema de un párrafo. Fecha límite: [por confirmar].">Before S2: Submit your one-paragraph problem statement. Due [date TBD].</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">13 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()">&#8594;</button></div></div></div>
+</div>
+
+<!-- SLIDE 12: CLOSE -->
+<div class="slide closing-slide"
+  data-notes-en="Close with conviction. Remind them: discipline in the process is what separates sustainable fixes from recurring problems. That discipline starts now. Stop recording after you close. Distribute within 48 hours."
+  data-notes-es="Cierre con convicción. Recuérdeles: la disciplina en el proceso es lo que separa las soluciones sostenibles de los problemas recurrentes. Esa disciplina comienza ahora. Detenga la grabación después de cerrar. Distribuya en 48 horas.">
+  <div class="slide-header"><span class="logo-text">SYNERGETICS</span><div class="header-right"><div class="lang-toggle"><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('es')">ES</button></div><span class="session-badge" data-en="S1 — Complete" data-es="S1 — Completa">S1 — Complete</span></div></div>
+  <div class="slide-body">
+    <h2 data-en="The discipline starts now." data-es="La disciplina comienza ahora.">The discipline starts now.</h2>
+    <div class="assignment-box">
+      <div class="assign-label" data-en="Your S1 Assignment" data-es="Su Tarea S1">Your S1 Assignment</div>
+      <p data-en="Submit a one-paragraph problem statement for your facility project before Session 2." data-es="Envíe un enunciado del problema de un párrafo para su proyecto de planta antes de la Sesión 2.">Submit a one-paragraph problem statement for your facility project before Session 2.</p>
+      <p data-en="It must include: facility and line, what the problem is, how often it occurs, and the measurable impact." data-es="Debe incluir: planta y línea, cuál es el problema, con qué frecuencia ocurre y el impacto medible.">It must include: facility and line, what the problem is, how often it occurs, and the measurable impact.</p>
+      <div class="example" data-en='"[Facility], [Line] experiences [problem] averaging [frequency], occurring [when/where], resulting in approximately [measurable impact]."' data-es='"[Planta], [Línea] experimenta [problema] promediando [frecuencia], ocurriendo [cuándo/dónde], resultando en aproximadamente [impacto medible]."'>"[Facility], [Line] experiences [problem] averaging [frequency], occurring [when/where], resulting in approximately [measurable impact]."</div>
+    </div>
+    <div class="next-session" data-en='Next session: <strong>S2 — Mastering D1 through D4</strong> &nbsp;·&nbsp; [Date TBD]' data-es='Próxima sesión: <strong>S2 — Dominando D1 a D4</strong> &nbsp;·&nbsp; [Fecha por confirmar]'>Next session: <strong>S2 — Mastering D1 through D4</strong> &nbsp;·&nbsp; [Date TBD]</div>
+  </div>
+  <div class="slide-footer"><span class="slide-counter">14 / 14</span><div style="display:flex;gap:8px;align-items:center;"><button class="notes-toggle" onclick="toggleNotes()" data-en="Notes" data-es="Notas">Notes</button><div class="nav-btns"><button class="nav-btn" onclick="prevSlide()">&#8592;</button><button class="nav-btn" onclick="nextSlide()" disabled>&#8594;</button></div></div></div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+let notesVisible = false;
+let failureCount = 0;
+let arcCount = 0;
+let currentLang = 'en';
+
+const arcDisciplines = ['arc-d1','arc-d2','arc-d3','arc-d4','arc-d5','arc-d6','arc-d7','arc-d8'];
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === lang));
+  applyLang();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const val = el.getAttribute('data-' + currentLang);
+    if (val !== null) {
+      if (el.tagName === 'INPUT') {
+        const ph = el.getAttribute('data-placeholder-' + currentLang);
+        if (ph) el.placeholder = ph;
+      } else {
+        el.innerHTML = val;
+      }
+    }
+  });
+  document.querySelectorAll('[data-notes-en]').forEach(el => {});
+
+  const psOutput = document.getElementById('ps-output');
+  const isEmpty = !document.getElementById('ps-facility').value &&
+                  !document.getElementById('ps-problem').value &&
+                  !document.getElementById('ps-frequency').value &&
+                  !document.getElementById('ps-impact').value;
+  if (isEmpty) {
+    psOutput.textContent = psOutput.getAttribute('data-empty-' + currentLang) || psOutput.getAttribute('data-empty-en');
+  }
+
+  const arcProg = document.getElementById('arc-progress');
+  if (arcProg) {
+    const template = arcProg.getAttribute('data-' + currentLang + '-template') || arcProg.getAttribute('data-en-template');
+    arcProg.textContent = template ? template.replace('X', arcCount) : arcCount + ' of 8 disciplines';
+  }
+
+  const addBtn = document.getElementById('arc-add-btn');
+  if (addBtn && arcCount >= arcDisciplines.length) {
+    addBtn.textContent = currentLang === 'es' ? 'Todas las disciplinas agregadas' : 'All disciplines added';
+  }
+
+  const revBtn = document.getElementById('reveal-failures-btn');
+  if (revBtn && failureCount >= 4) {
+    revBtn.textContent = currentLang === 'es' ? 'Todas reveladas' : 'All revealed';
+  }
+
+  if (notesVisible) updateNotes();
+}
+
+function goToSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  slides[currentSlide].classList.add('active');
+  document.querySelectorAll('.slide.active .nav-btn:first-child').forEach(b => b.disabled = currentSlide === 0);
+  document.querySelectorAll('.slide.active .nav-btn:last-child').forEach(b => b.disabled = currentSlide === totalSlides - 1);
+  if (notesVisible) updateNotes();
+  applyLang();
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  var tag = document.activeElement.tagName.toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+  if (e.key === 'n' || e.key === 'N') toggleNotes();
+});
+
+function toggleNotes() {
+  notesVisible = !notesVisible;
+  document.getElementById('notes-panel').classList.toggle('visible', notesVisible);
+  if (notesVisible) updateNotes();
+}
+
+function updateNotes() {
+  const s = slides[currentSlide];
+  const notes = s.getAttribute('data-notes-' + currentLang) || s.getAttribute('data-notes-en') || '';
+  document.getElementById('notes-heading').textContent = currentLang === 'es' ? 'Notas del Facilitador' : 'Facilitator Notes';
+  document.getElementById('notes-content').innerHTML = '<p>' + notes + '</p>';
+}
+
+function revealNextFailure() {
+  const ids = ['fm1','fm2','fm3','fm4'];
+  if (failureCount < ids.length) {
+    document.getElementById(ids[failureCount]).classList.add('visible');
+    failureCount++;
+    if (failureCount >= ids.length) {
+      const btn = document.getElementById('reveal-failures-btn');
+      btn.disabled = true;
+      btn.textContent = currentLang === 'es' ? 'Todas reveladas' : 'All revealed';
+    }
+  }
+}
+
+function revealQuiz(quizId) {
+  const container = document.getElementById(quizId + '-answers');
+  container.querySelectorAll('.quiz-answer').forEach(a => {
+    const correct = a.getAttribute('data-correct');
+    if (correct === 'true') a.classList.add('revealed-correct');
+    else if (correct === 'partial') a.classList.add('revealed-partial');
+    else a.classList.add('revealed-wrong');
+    a.disabled = true;
+  });
+  const btn = document.getElementById(quizId + '-reveal');
+  btn.disabled = true;
+  btn.textContent = currentLang === 'es' ? 'Respuesta revelada' : 'Answer revealed';
+  const explanation = document.getElementById(quizId + '-explanation');
+  if (explanation) explanation.classList.add('visible');
+}
+
+function selectAnswer(el, quizId) {
+  document.getElementById(quizId + '-answers').querySelectorAll('.quiz-answer').forEach(a => a.style.borderColor = '');
+  el.style.borderColor = '#07275D';
+}
+
+function addNextDiscipline() {
+  if (arcCount < arcDisciplines.length) {
+    if (arcCount > 0) document.getElementById(arcDisciplines[arcCount - 1]).classList.remove('highlight');
+    const card = document.getElementById(arcDisciplines[arcCount]);
+    card.classList.add('visible', 'highlight');
+    arcCount++;
+    const prog = document.getElementById('arc-progress');
+    const template = prog.getAttribute('data-' + currentLang + '-template') || prog.getAttribute('data-en-template');
+    prog.textContent = template ? template.replace('X', arcCount) : arcCount + ' of 8 disciplines';
+    if (arcCount >= arcDisciplines.length) {
+      const btn = document.getElementById('arc-add-btn');
+      btn.disabled = true;
+      btn.textContent = currentLang === 'es' ? 'Todas las disciplinas agregadas' : 'All disciplines added';
+      arcDisciplines.forEach(id => document.getElementById(id).classList.remove('highlight'));
+    }
+  }
+}
+
+function resetArc() {
+  arcCount = 0;
+  arcDisciplines.forEach(id => document.getElementById(id).classList.remove('visible','highlight'));
+  const btn = document.getElementById('arc-add-btn');
+  btn.disabled = false;
+  btn.textContent = currentLang === 'es' ? 'Agregar siguiente disciplina →' : 'Add next discipline →';
+  const prog = document.getElementById('arc-progress');
+  const template = prog.getAttribute('data-' + currentLang + '-template') || prog.getAttribute('data-en-template');
+  prog.textContent = template ? template.replace('X', 0) : '0 of 8 disciplines';
+}
+
+function updatePS() {
+  const f = document.getElementById('ps-facility').value.trim();
+  const p = document.getElementById('ps-problem').value.trim();
+  const fr = document.getElementById('ps-frequency').value.trim();
+  const i = document.getElementById('ps-impact').value.trim();
+  const out = document.getElementById('ps-output');
+  if (!f && !p && !fr && !i) {
+    out.textContent = out.getAttribute('data-empty-' + currentLang) || out.getAttribute('data-empty-en');
+    out.style.color = '#aaa';
+    return;
+  }
+  const experWord = currentLang === 'es' ? 'experimenta' : 'experiences';
+  const occurWord = currentLang === 'es' ? 'ocurriendo' : 'occurring';
+  const impactWord = currentLang === 'es' ? 'Impacto estimado:' : 'Estimated impact:';
+  let stmt = '';
+  if (f) stmt += f + ' ';
+  if (p) stmt += experWord + ' ' + p;
+  if (fr) stmt += ', ' + occurWord + ' ' + fr;
+  if (i) stmt += '. ' + impactWord + ' ' + i + '.';
+  out.textContent = stmt;
+  out.style.color = '#07275D';
+  // Reset polished box when inputs change
+  clearPolished();
+}
+
+async function polishStatement() {
+  const rawOut     = document.getElementById('ps-output');
+  const polishedOut= document.getElementById('ps-polished-output');
+  const btn        = document.getElementById('ps-polish-btn');
+  const apiKey     = (document.getElementById('ps-api-key').value || '').trim();
+  const rawText    = rawOut.textContent.trim();
+
+  const emptyEn = rawOut.getAttribute('data-empty-en');
+  const emptyEs = rawOut.getAttribute('data-empty-es');
+  if (!rawText || rawText === emptyEn || rawText === emptyEs) return;
+
+  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+    polishedOut.textContent = currentLang === 'es'
+      ? 'Pegue su clave API de Anthropic (sk-ant-...) para activar esta función.'
+      : 'Paste your Anthropic API key (sk-ant-...) in the field above to enable AI polishing.';
+    polishedOut.style.color = '#A32D2D';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = currentLang === 'es' ? 'Puliendo…' : 'Polishing…';
+  polishedOut.style.color = '#888';
+  polishedOut.textContent = currentLang === 'es' ? 'Reescribiendo…' : 'Rewriting…';
+
+  const systemPrompt = currentLang === 'es'
+    ? 'Eres un experto en operaciones de manufactura. Reescribe el enunciado del problema tal como está en una o dos oraciones fluidas y profesionales. Conserva TODOS los detalles (planta, línea, problema, frecuencia, impacto). No agregues información. Devuelve solo el enunciado, sin comillas ni explicaciones.'
+    : 'You are a manufacturing operations expert. Rewrite the given problem statement into one or two clean, fluent, professional sentences. Preserve EVERY detail (facility, line, problem, frequency, impact) — fix grammar and tense, but do not invent or omit anything. Return only the polished statement, no quotes, no explanation.';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: rawText }]
+      })
+    });
+    const data = await response.json();
+    const polished = data.content && data.content[0] && data.content[0].text
+      ? data.content[0].text.trim()
+      : null;
+
+    if (polished) {
+      polishedOut.textContent = polished;
+      polishedOut.style.color = '#1a3a08';
+      // Grade the polished statement
+      gradeStatement(polished, apiKey);
+    } else {
+      const errMsg = data.error ? data.error.message : 'Unknown error';
+      polishedOut.textContent = (currentLang === 'es' ? 'Error: ' : 'Error: ') + errMsg;
+      polishedOut.style.color = '#A32D2D';
+    }
+  } catch (err) {
+    polishedOut.textContent = currentLang === 'es' ? 'Error de red. Verifique su conexión.' : 'Network error. Check your connection.';
+    polishedOut.style.color = '#A32D2D';
+  }
+
+  btn.disabled = false;
+  btn.textContent = currentLang === 'es' ? '❆ Pulir con IA →' : '❆ Polish with AI →';
+}
+
+function resetForm() {
+  ['ps-facility','ps-problem','ps-frequency','ps-impact'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+  });
+  const out = document.getElementById('ps-output');
+  out.textContent = out.getAttribute('data-empty-' + currentLang) || out.getAttribute('data-empty-en');
+  out.style.color = '#aaa';
+  clearPolished();
+}
+
+async function gradeStatement(statement, apiKey) {
+  const badge       = document.getElementById('ps-grade-badge');
+  const feedbackWrap= document.getElementById('ps-feedback-wrap');
+  const feedbackText= document.getElementById('ps-feedback-text');
+  badge.style.display = 'none';
+  feedbackWrap.style.display = 'none';
+
+  const isEs = currentLang === 'es';
+
+  const gradingPrompt = isEs
+    ? `Eres un instructor de manufactura evaluando enunciados de problemas para el proceso 8D. Evalúa el enunciado contra estos criterios:\n- FUERTE: tiene los cuatro elementos (instalación/línea específica, descripción clara del problema, frecuencia con número, impacto medible) y cada uno es específico y accionable.\n- ACEPTABLE: tiene la mayoría de los elementos pero al menos uno es vago o no cuantificado.\n- DÉBIL: faltan dos o más elementos, o los que están son demasiado vagos.\n\nResponde SOLO en este formato JSON exacto, sin texto adicional:\n{"grade":"FUERTE|ACEPTABLE|DÉBIL","feedback":"2-3 oraciones explicando la calificación. Sé específico sobre qué está bien y qué falta o es demasiado vago."}`
+    : `You are a manufacturing instructor grading 8D problem statements. Grade against these criteria:\n- STRONG: all four elements present (specific facility/line, clear problem description, frequency with a number, measurable impact) and each is specific and actionable.\n- OK: has most elements but at least one is vague or unquantified.\n- WEAK: missing two or more elements, or those present are too vague to be useful.\n\nRespond ONLY in this exact JSON format, no other text:\n{"grade":"STRONG|OK|WEAK","feedback":"2-3 sentences explaining the grade. Be specific about what is working and what is missing or too vague."}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        system: gradingPrompt,
+        messages: [{ role: 'user', content: statement }]
+      })
+    });
+    const data = await response.json();
+    const raw = data.content && data.content[0] && data.content[0].text
+      ? data.content[0].text.trim()
+      : '';
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch(e) {
+      // try extracting JSON from response
+      const match = raw.match(/\{[^}]+\}/s);
+      if (match) parsed = JSON.parse(match[0]);
+    }
+    if (!parsed) return;
+
+    const gradeUpper = (parsed.grade || '').toUpperCase();
+    let label, bg, color;
+    if (gradeUpper.includes('STRONG') || gradeUpper.includes('FUERTE')) {
+      label = isEs ? 'FUERTE' : 'STRONG';
+      bg = '#d4edda'; color = '#1a5c2a';
+    } else if (gradeUpper.includes('OK') || gradeUpper.includes('ACEPTABLE')) {
+      label = isEs ? 'ACEPTABLE' : 'OK';
+      bg = '#fff3cd'; color = '#7a5200';
+    } else if (gradeUpper.includes('WEAK') || gradeUpper.includes('DÉBIL') || gradeUpper.includes('DEBIL')) {
+      label = isEs ? 'DÉBIL' : 'WEAK';
+      bg = '#fde8e8'; color = '#A32D2D';
+    } else {
+      return;
+    }
+
+    badge.textContent = label;
+    badge.style.background = bg;
+    badge.style.color = color;
+    badge.style.border = '1px solid ' + color;
+    badge.style.display = 'inline-block';
+
+    if (parsed.feedback) {
+      feedbackText.textContent = parsed.feedback;
+      feedbackWrap.style.display = 'block';
+      // Match feedback border accent to grade color
+      feedbackWrap.style.borderLeft = '4px solid ' + color;
+      feedbackText.style.color = '#333';
+    }
+  } catch(err) {
+    // silently fail
+  }
+}
+
+function clearPolished() {
+  const polishedOut = document.getElementById('ps-polished-output');
+  polishedOut.textContent = 'Click ✦ Polish with AI → to rewrite cleanly...';
+  polishedOut.style.color = '#aaa';
+  const badge = document.getElementById('ps-grade-badge');
+  if (badge) badge.style.display = 'none';
+  const feedbackWrap = document.getElementById('ps-feedback-wrap');
+  if (feedbackWrap) feedbackWrap.style.display = 'none';
+}
+goToSlide(0);
+</script>
+</body>
+</html>
